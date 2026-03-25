@@ -58,7 +58,7 @@ const Index = () => {
         {/* Logo */}
         <div className="p-6 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">SIGCE</h1>
+            <h1 className="text-xl font-bold text-white tracking-tight">SIGCE PURA FÉ</h1>
             <p className="text-[10px] text-sidebar-foreground/60 leading-tight mt-0.5">
               Sistema Integrado de Gestão
               <br />
