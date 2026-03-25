@@ -150,7 +150,7 @@ export default function EstoqueScreen() {
                       <div className="flex items-center gap-1.5">
                         <Badge className={`text-[10px] border-0 ${cfg.color}`}>{cfg.label}</Badge>
                         {item.sugestaoCompra && (
-                          <RefreshCw className="h-3 w-3 text-primary" title="Sugestão de nova compra" />
+                          <RefreshCw className="h-3 w-3 text-primary" />
                         )}
                       </div>
                     </TableCell>
