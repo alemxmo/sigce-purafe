@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { CheckCircle2, XCircle, MessageSquare, TrendingDown, ShieldCheck, User, Building2, Calendar, Paperclip, AlertCircle, Smartphone } from "lucide-react";
+import { CheckCircle2, XCircle, MessageSquare, TrendingDown, ShieldCheck, AlertCircle, Smartphone, Copy, ExternalLink, Paperclip, Image } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 
 interface Aprovacao {
@@ -29,15 +30,15 @@ const pendentes: Aprovacao[] = [
     centroCusto: "EVENTOS", justificativa: "Retiro anual de liderança, 80 participantes. Local já reservado.",
     fornecedor: "Fazenda Pura Fé Eventos", valorOriginal: "R$ 6.250,00", valorNegociado: "R$ 6.000,00",
     saving: "R$ 250,00", prazo: "Pagamento até 15/03", urgencia: "Alta",
-    negociadoPor: "Janete", aprovado: false,
-    timeline: ["Solicitação criada por Pr. Rafael", "3 cotações recebidas", "Fornecedor selecionado: Fazenda Pura Fé", "Negociação final por Janete — saving R$ 250"],
+    negociadoPor: "Controladoria", aprovado: false,
+    timeline: ["Solicitação criada pela área de Eventos", "3 cotações recebidas", "Fornecedor selecionado: Fazenda Pura Fé", "Negociação final — saving R$ 250"],
   },
   {
     id: 2, titulo: "Kit Café — Central de Atendimento", solicitante: "Pr. Rafael Diniz", area: "Central de Atendimento",
     centroCusto: "CENTRAL", justificativa: "Reposição de estoque de café e descartáveis. Atendemos 200+ pessoas/semana.",
     fornecedor: "Casa do Café", valorOriginal: "R$ 415,00", valorNegociado: "R$ 389,61",
     saving: "R$ 25,39", prazo: "Entrega em 2 dias", urgencia: "Alta",
-    negociadoPor: "Rafael", aprovado: false,
+    negociadoPor: "Compras", aprovado: false,
     timeline: ["Solicitação criada", "3 cotações comparadas", "Melhor preço: Casa do Café", "Enviado para aprovação"],
   },
   {
@@ -45,7 +46,7 @@ const pendentes: Aprovacao[] = [
     centroCusto: "SEDE", justificativa: "Reposição mensal regular de materiais de limpeza.",
     fornecedor: "Dousystem", valorOriginal: "R$ 850,00", valorNegociado: "R$ 780,00",
     saving: "R$ 70,00", prazo: "Entrega em 3 dias", urgencia: "Normal",
-    negociadoPor: "Janete", aprovado: false,
+    negociadoPor: "Controladoria", aprovado: false,
     timeline: ["Solicitação mensal automática", "Cotação com fornecedor preferencial", "Saving negociado: R$ 70"],
   },
 ];
@@ -59,13 +60,21 @@ export default function AprovacaoScreen() {
     toast({ title: "✅ Compra Aprovada", description: `${item?.titulo} — ${item?.valorNegociado} encaminhado para pagamento.` });
   };
 
+  const handleWhatsAppApproval = (item: Aprovacao) => {
+    const msg = encodeURIComponent(
+      `*SIGCE — Solicitação de Aprovação*\n\n📋 *${item.titulo}*\n👤 Solicitante: ${item.solicitante}\n🏢 Área: ${item.area} (${item.centroCusto})\n💰 Valor negociado: ${item.valorNegociado}\n💚 Saving: ${item.saving}\n📦 Fornecedor: ${item.fornecedor}\n📅 Prazo: ${item.prazo}\n\n📝 Justificativa: ${item.justificativa}\n\nResponda com:\n✅ APROVADO\n❌ RECUSADO\n🔄 PEDIR AJUSTE`
+    );
+    window.open(`https://wa.me/?text=${msg}`, "_blank");
+    toast({ title: "📱 WhatsApp Aberto", description: "Envie a mensagem e registre a resposta quando receber." });
+  };
+
   return (
     <div className="animate-fade-in space-y-6 max-w-3xl mx-auto">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground">Decisões rápidas para manter o fluxo operacional ágil.</p>
         <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
           <Smartphone className="h-3.5 w-3.5" />
-          <span>Em breve: aprovação via WhatsApp</span>
+          <span>Aprovação via plataforma ou WhatsApp</span>
         </div>
       </div>
 
@@ -150,19 +159,42 @@ export default function AprovacaoScreen() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <Button onClick={() => handleAprovar(item.id)} className="h-11 text-xs font-semibold bg-success hover:bg-success/90 text-success-foreground rounded-xl col-span-2 sm:col-span-1">
-                  <CheckCircle2 className="h-4 w-4 mr-1.5" /> Aprovar
-                </Button>
-                <Button variant="outline" className="h-11 text-xs font-semibold border-destructive text-destructive hover:bg-destructive/5 rounded-xl">
-                  <XCircle className="h-4 w-4 mr-1.5" /> Recusar
-                </Button>
-                <Button variant="outline" className="h-11 text-xs font-semibold rounded-xl">
-                  <MessageSquare className="h-4 w-4 mr-1.5" /> Pedir Ajuste
-                </Button>
-                <Button variant="outline" className="h-11 text-xs font-semibold rounded-xl text-warning">
-                  <AlertCircle className="h-4 w-4 mr-1.5" /> Aprovar c/ Ressalva
-                </Button>
+              <div className="space-y-3">
+                {/* Platform approval */}
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Aprovar na Plataforma</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <Button onClick={() => handleAprovar(item.id)} className="h-11 text-xs font-semibold bg-success hover:bg-success/90 text-success-foreground rounded-xl col-span-2 sm:col-span-1">
+                    <CheckCircle2 className="h-4 w-4 mr-1.5" /> Aprovar
+                  </Button>
+                  <Button variant="outline" className="h-11 text-xs font-semibold border-destructive text-destructive hover:bg-destructive/5 rounded-xl">
+                    <XCircle className="h-4 w-4 mr-1.5" /> Recusar
+                  </Button>
+                  <Button variant="outline" className="h-11 text-xs font-semibold rounded-xl">
+                    <MessageSquare className="h-4 w-4 mr-1.5" /> Pedir Ajuste
+                  </Button>
+                  <Button variant="outline" className="h-11 text-xs font-semibold rounded-xl text-warning">
+                    <AlertCircle className="h-4 w-4 mr-1.5" /> Com Ressalva
+                  </Button>
+                </div>
+
+                {/* WhatsApp approval */}
+                <div className="border-t pt-3">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Aprovação via WhatsApp</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <Button variant="outline" className="h-9 text-xs" onClick={() => handleWhatsAppApproval(item)}>
+                      <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Enviar via WhatsApp
+                    </Button>
+                    <Button variant="outline" className="h-9 text-xs" onClick={() => {
+                      handleAprovar(item.id);
+                      toast({ title: "✅ Aprovação Registrada", description: "Aprovação recebida via WhatsApp foi registrada no sistema." });
+                    }}>
+                      <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> Registrar Aprovação
+                    </Button>
+                    <Button variant="outline" className="h-9 text-xs">
+                      <Image className="h-3.5 w-3.5 mr-1.5" /> Anexar Print
+                    </Button>
+                  </div>
+                </div>
               </div>
             )}
           </CardContent>
