@@ -1,15 +1,15 @@
-import { TrendingDown, TrendingUp, DollarSign, Calendar, CreditCard, ArrowRight } from "lucide-react";
+import { TrendingDown, TrendingUp, DollarSign, Calendar, CreditCard } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const savingData = [
-  { pedido: "Retiro Fazenda Pura Fé", original: 6250, fechado: 6000, economia: 250, negociador: "Janete" },
-  { pedido: "Material de Limpeza SEDE", original: 850, fechado: 780, economia: 70, negociador: "Janete" },
-  { pedido: "Camisetas de Batismo (100un)", original: 3200, fechado: 2800, economia: 400, negociador: "Rafael" },
-  { pedido: "Kit Café — Central", original: 415, fechado: 389.61, economia: 25.39, negociador: "Rafael" },
-  { pedido: "Líquido Haze 5L (4x)", original: 1320, fechado: 1180, economia: 140, negociador: "Janete" },
-  { pedido: "Copos Biodegradáveis 60ml", original: 580, fechado: 520, economia: 60, negociador: "Rafael" },
+  { pedido: "Retiro Fazenda Pura Fé", original: 6250, fechado: 6000, economia: 250, negociador: "Controladoria" },
+  { pedido: "Material de Limpeza SEDE", original: 850, fechado: 780, economia: 70, negociador: "Controladoria" },
+  { pedido: "Camisetas de Batismo (100un)", original: 3200, fechado: 2800, economia: 400, negociador: "Compras" },
+  { pedido: "Kit Café — Central", original: 415, fechado: 389.61, economia: 25.39, negociador: "Compras" },
+  { pedido: "Líquido Haze 5L (4x)", original: 1320, fechado: 1180, economia: 140, negociador: "Controladoria" },
+  { pedido: "Copos Biodegradáveis 60ml", original: 580, fechado: 520, economia: 60, negociador: "Compras" },
 ];
 
 const despesasRecorrentes = [
@@ -99,7 +99,7 @@ export default function ControladoriaScreen() {
                 <TableHead className="text-[11px] font-semibold text-right">Valor Fechado</TableHead>
                 <TableHead className="text-[11px] font-semibold text-right">Economia</TableHead>
                 <TableHead className="text-[11px] font-semibold">%</TableHead>
-                <TableHead className="text-[11px] font-semibold">Negociador</TableHead>
+                <TableHead className="text-[11px] font-semibold">Negociado por</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

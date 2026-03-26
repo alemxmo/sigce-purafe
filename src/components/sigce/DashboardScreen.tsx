@@ -46,13 +46,13 @@ const aprovacoesPendentes = [
 ];
 
 const atividades = [
-  { text: "Caslu solicitou Líquido p/ Máquina de Haze", tempo: "Há 2h", cor: "bg-primary" },
-  { text: "Rafael enviou 3 cotações para Kit Café", tempo: "Há 4h", cor: "bg-primary" },
-  { text: "Bispa aprovou Retiro Fazenda Pura Fé", tempo: "Há 6h", cor: "bg-success" },
-  { text: "Janete registrou saving de R$ 250,00", tempo: "Há 8h", cor: "bg-success" },
-  { text: "Michele pagou TACC Iluminação via Pix", tempo: "Há 1 dia", cor: "bg-muted-foreground" },
-  { text: "Cleiton registrou entrada de 70 camisetas", tempo: "Há 1 dia", cor: "bg-warning" },
-  { text: "Mary confirmou recebimento — NF #4521", tempo: "Há 2 dias", cor: "bg-muted-foreground" },
+  { text: "Nova solicitação: Líquido p/ Máquina de Haze — Iluminação", tempo: "Há 2h", cor: "bg-primary" },
+  { text: "Compras enviou 3 cotações para Kit Café", tempo: "Há 4h", cor: "bg-primary" },
+  { text: "Aprovação executiva confirmada — Retiro Fazenda Pura Fé", tempo: "Há 6h", cor: "bg-success" },
+  { text: "Controladoria registrou saving de R$ 250,00", tempo: "Há 8h", cor: "bg-success" },
+  { text: "Pagamento efetuado — TACC Iluminação via Pix", tempo: "Há 1 dia", cor: "bg-muted-foreground" },
+  { text: "Estoque atualizado — entrada de 70 camisetas de batismo", tempo: "Há 1 dia", cor: "bg-warning" },
+  { text: "Recebimento confirmado — NF #4521", tempo: "Há 2 dias", cor: "bg-muted-foreground" },
 ];
 
 const alertas = [

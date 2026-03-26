@@ -1,61 +1,56 @@
-import { useState } from "react";
-import { Package, CheckCircle, AlertTriangle, ShoppingCart, ArrowDown, ArrowUp, MapPin, RefreshCw } from "lucide-react";
+import { Package, AlertTriangle, CheckCircle2, ShoppingCart, ArrowDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-interface ItemEstoque {
+interface Item {
   id: number;
-  item: string;
+  nome: string;
   categoria: string;
   qtd: number;
   estoqueMinimo: number;
   pontoReposicao: number;
-  max: number;
   local: string;
   status: "adequado" | "alerta" | "comprar";
   ultimaEntrada?: string;
   ultimaSaida?: string;
-  sugestaoCompra: boolean;
 }
 
-const itens: ItemEstoque[] = [
-  { id: 1, item: "Camisetas de Batismo", categoria: "Vestuário", qtd: 70, estoqueMinimo: 30, pontoReposicao: 50, max: 150, local: "SEDE — Almoxarifado A", status: "adequado", ultimaEntrada: "10/03 — 70 un (Print Express)", ultimaSaida: "03/03 — 15 un (Batismo Março)", sugestaoCompra: false },
-  { id: 2, item: "Pilhas p/ Microfone (AA)", categoria: "Eletrônicos", qtd: 15, estoqueMinimo: 40, pontoReposicao: 60, max: 100, local: "SEDE — Cabine Som", status: "comprar", ultimaEntrada: "20/02 — 48 un (SomPro)", ultimaSaida: "09/03 — 12 un (Culto)", sugestaoCompra: true },
-  { id: 3, item: "Copos Papel Biodegradável 60ml", categoria: "Copa & Cozinha", qtd: 50, estoqueMinimo: 100, pontoReposicao: 200, max: 500, local: "SEDE — Copa", status: "alerta", ultimaEntrada: "01/03 — 500 un (Dousystem)", ultimaSaida: "10/03 — 200 un (Semana)", sugestaoCompra: true },
-  { id: 4, item: "Livros Pastorais", categoria: "Literatura", qtd: 120, estoqueMinimo: 20, pontoReposicao: 40, max: 200, local: "SEDE — Livraria", status: "adequado", ultimaEntrada: "15/02 — 50 un (Editora Fé)", ultimaSaida: "08/03 — 10 un (Classe Batismo)", sugestaoCompra: false },
-  { id: 5, item: "Líquido Haze Galão 5L", categoria: "Consumíveis", qtd: 0, estoqueMinimo: 2, pontoReposicao: 4, max: 10, local: "SEDE — Cabine Iluminação", status: "comprar", ultimaEntrada: "01/02 — 4 un (TACC)", ultimaSaida: "09/03 — 2 un (Culto Especial)", sugestaoCompra: true },
-  { id: 6, item: "Kit Café Melitta", categoria: "Copa & Cozinha", qtd: 3, estoqueMinimo: 2, pontoReposicao: 4, max: 10, local: "SEDE — Copa", status: "alerta", ultimaEntrada: "05/03 — 4 un (Casa do Café)", ultimaSaida: "10/03 — 1 un (Semana)", sugestaoCompra: false },
-  { id: 7, item: "Desinfetante 5L", categoria: "Limpeza", qtd: 8, estoqueMinimo: 3, pontoReposicao: 5, max: 15, local: "SEDE — Almoxarifado B", status: "adequado", ultimaEntrada: "08/03 — 6 un (Dousystem)", ultimaSaida: "10/03 — 2 un", sugestaoCompra: false },
-  { id: 8, item: "Copos Papel 200ml (cx)", categoria: "Copa & Cozinha", qtd: 5, estoqueMinimo: 10, pontoReposicao: 20, max: 50, local: "FAZENDA — Depósito", status: "comprar", ultimaEntrada: "01/02 — 30 cx", ultimaSaida: "09/03 — 15 cx (Retiro)", sugestaoCompra: true },
+const itens: Item[] = [
+  { id: 1, nome: "Camisetas de Batismo", categoria: "Vestuário", qtd: 70, estoqueMinimo: 20, pontoReposicao: 40, local: "SEDE — Almoxarifado A", status: "adequado", ultimaEntrada: "10/03 — 70 un (Print Express)", ultimaSaida: "Último batismo: 08/03 — 12 un" },
+  { id: 2, nome: "Pilhas p/ Microfone (AA)", categoria: "Eletrônicos", qtd: 15, estoqueMinimo: 20, pontoReposicao: 48, local: "SEDE — Sala Técnica", status: "comprar", ultimaEntrada: "20/02 — 48 un (SomPro)", ultimaSaida: "Cultos semanais — ~8 un/semana" },
+  { id: 3, nome: "Copos Papel Biodegradável 60ml", categoria: "Descartáveis", qtd: 50, estoqueMinimo: 100, pontoReposicao: 500, local: "SEDE — Copa", status: "alerta", ultimaEntrada: "01/03 — 500 un (Dousystem)", ultimaSaida: "Consumo diário: ~30 un" },
+  { id: 4, nome: "Livros Pastorais", categoria: "Materiais", qtd: 120, estoqueMinimo: 30, pontoReposicao: 50, local: "SEDE — Secretaria", status: "adequado" },
+  { id: 5, nome: "Líquido Haze 5L", categoria: "Consumíveis", qtd: 1, estoqueMinimo: 2, pontoReposicao: 4, local: "SEDE — Sala Técnica", status: "comprar", ultimaEntrada: "10/02 — 4 galões (TACC)", ultimaSaida: "~1 galão/semana" },
+  { id: 6, nome: "Desinfetante 5L", categoria: "Limpeza", qtd: 8, estoqueMinimo: 3, pontoReposicao: 6, local: "SEDE — Almoxarifado B", status: "adequado", ultimaEntrada: "08/03 — 12 un (Dousystem)" },
 ];
 
-const statusConfig = {
-  adequado: { label: "Adequado", color: "bg-success/15 text-success", barColor: "bg-success" },
-  alerta: { label: "Alerta", color: "bg-warning/15 text-warning", barColor: "bg-warning" },
-  comprar: { label: "Comprar", color: "bg-destructive/15 text-destructive", barColor: "bg-destructive" },
+const entradasRecentes = [
+  { data: "10/03", item: "Camisetas de Batismo (70 un)", fornecedor: "Print Express", local: "SEDE — Almoxarifado A" },
+  { data: "08/03", item: "Material de Limpeza completo", fornecedor: "Dousystem", local: "SEDE — Almoxarifado B" },
+  { data: "05/03", item: "Kit Café Completo", fornecedor: "Casa do Café", local: "SEDE — Copa" },
+];
+
+const statusColor: Record<string, string> = {
+  adequado: "bg-success/15 text-success",
+  alerta: "bg-warning/15 text-warning",
+  comprar: "bg-destructive/15 text-destructive",
+};
+
+const statusLabel: Record<string, string> = {
+  adequado: "Adequado",
+  alerta: "Alerta",
+  comprar: "Comprar",
 };
 
 export default function EstoqueScreen() {
-  const [filtroLocal, setFiltroLocal] = useState("todos");
-  const [filtroStatus, setFiltroStatus] = useState("todos");
-
-  const filtered = itens.filter(i => {
-    if (filtroStatus !== "todos" && i.status !== filtroStatus) return false;
-    if (filtroLocal !== "todos" && !i.local.toLowerCase().includes(filtroLocal.toLowerCase())) return false;
-    return true;
-  });
-
   const adequados = itens.filter(i => i.status === "adequado").length;
   const alertas = itens.filter(i => i.status === "alerta").length;
   const comprar = itens.filter(i => i.status === "comprar").length;
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      {/* Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div className="space-y-5 animate-fade-in">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Card className="border-0 shadow-sm"><CardContent className="p-4">
           <p className="text-2xl font-bold">{itens.length}</p>
           <p className="text-[10px] text-muted-foreground">SKUs Monitorados</p>
@@ -74,92 +69,75 @@ export default function EstoqueScreen() {
         </CardContent></Card>
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-2">
-        <Select value={filtroStatus} onValueChange={setFiltroStatus}>
-          <SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos</SelectItem>
-            <SelectItem value="adequado">Adequado</SelectItem>
-            <SelectItem value="alerta">Alerta</SelectItem>
-            <SelectItem value="comprar">Comprar</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={filtroLocal} onValueChange={setFiltroLocal}>
-          <SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue placeholder="Local" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos Locais</SelectItem>
-            <SelectItem value="sede">SEDE</SelectItem>
-            <SelectItem value="fazenda">FAZENDA</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <p className="text-[10px] text-muted-foreground">Controle inicial estruturado — base para evolução futura com saídas, inventário e integração completa.</p>
 
-      {/* Table */}
       <Card className="border-0 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40">
                 <TableHead className="text-[11px] font-semibold">Item</TableHead>
-                <TableHead className="text-[11px] font-semibold text-center">Saldo</TableHead>
-                <TableHead className="text-[11px] font-semibold">Nível</TableHead>
-                <TableHead className="text-[11px] font-semibold">Mín / Repos.</TableHead>
+                <TableHead className="text-[11px] font-semibold">Categoria</TableHead>
+                <TableHead className="text-[11px] font-semibold text-center">Qtd</TableHead>
+                <TableHead className="text-[11px] font-semibold text-center">Mínimo</TableHead>
+                <TableHead className="text-[11px] font-semibold text-center">Pt. Reposição</TableHead>
                 <TableHead className="text-[11px] font-semibold">Local</TableHead>
-                <TableHead className="text-[11px] font-semibold">Última Entrada</TableHead>
-                <TableHead className="text-[11px] font-semibold">Última Saída</TableHead>
+                <TableHead className="text-[11px] font-semibold">Nível</TableHead>
                 <TableHead className="text-[11px] font-semibold">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map(item => {
-                const cfg = statusConfig[item.status];
-                const pct = Math.min(Math.round((item.qtd / item.max) * 100), 100);
+              {itens.map(item => {
+                const pct = Math.min((item.qtd / item.pontoReposicao) * 100, 100);
+                const barColor = item.status === "adequado" ? "bg-success" : item.status === "alerta" ? "bg-warning" : "bg-destructive";
                 return (
                   <TableRow key={item.id} className={`hover:bg-muted/20 ${item.status === 'comprar' ? 'bg-destructive/5' : ''}`}>
                     <TableCell>
-                      <p className="text-xs font-medium">{item.item}</p>
-                      <p className="text-[10px] text-muted-foreground">{item.categoria}</p>
+                      <p className="text-xs font-medium">{item.nome}</p>
+                      {item.ultimaSaida && <p className="text-[9px] text-muted-foreground">{item.ultimaSaida}</p>}
                     </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{item.categoria}</TableCell>
                     <TableCell className="text-center">
-                      <span className={`text-sm font-bold ${item.status === 'comprar' ? 'text-destructive' : item.status === 'alerta' ? 'text-warning' : ''}`}>
+                      <span className={`text-xs font-bold ${item.status === 'comprar' ? 'text-destructive' : item.status === 'alerta' ? 'text-warning' : ''}`}>
                         {item.qtd}
                       </span>
                     </TableCell>
-                    <TableCell>
-                      <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div className={`h-full rounded-full ${cfg.barColor}`} style={{ width: `${pct}%` }} />
-                      </div>
-                      <span className="text-[9px] text-muted-foreground">{pct}%</span>
-                    </TableCell>
-                    <TableCell className="text-[10px] text-muted-foreground">{item.estoqueMinimo} / {item.pontoReposicao}</TableCell>
+                    <TableCell className="text-center text-xs text-muted-foreground">{item.estoqueMinimo}</TableCell>
+                    <TableCell className="text-center text-xs text-muted-foreground">{item.pontoReposicao}</TableCell>
                     <TableCell className="text-[10px] text-muted-foreground">{item.local}</TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1 text-[10px] text-success">
-                        <ArrowDown className="h-2.5 w-2.5" />
-                        <span className="text-muted-foreground">{item.ultimaEntrada}</span>
+                      <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
+                        <div className={`h-full ${barColor} rounded-full`} style={{ width: `${pct}%` }} />
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1 text-[10px]">
-                        <ArrowUp className="h-2.5 w-2.5 text-muted-foreground" />
-                        <span className="text-muted-foreground">{item.ultimaSaida}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1.5">
-                        <Badge className={`text-[10px] border-0 ${cfg.color}`}>{cfg.label}</Badge>
-                        {item.sugestaoCompra && (
-                          <RefreshCw className="h-3 w-3 text-primary" />
-                        )}
-                      </div>
-                    </TableCell>
+                    <TableCell><Badge className={`text-[10px] border-0 ${statusColor[item.status]}`}>{statusLabel[item.status]}</Badge></TableCell>
                   </TableRow>
                 );
               })}
             </TableBody>
           </Table>
         </div>
+      </Card>
+
+      <Card className="border-0 shadow-sm">
+        <CardHeader className="pb-2 pt-4 px-5">
+          <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+            <ArrowDown className="h-3.5 w-3.5" /> Entradas Recentes
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-5 pb-4">
+          <div className="space-y-2">
+            {entradasRecentes.map((e, i) => (
+              <div key={i} className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
+                <div>
+                  <p className="text-xs font-medium">{e.item}</p>
+                  <p className="text-[10px] text-muted-foreground">{e.fornecedor} → {e.local}</p>
+                </div>
+                <span className="text-[10px] text-muted-foreground">{e.data}</span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
       </Card>
     </div>
   );

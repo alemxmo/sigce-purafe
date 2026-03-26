@@ -1,4 +1,4 @@
-import { ArrowLeft, Save, Send, Info } from "lucide-react";
+import { ArrowLeft, Save, Send, Info, Link2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -127,6 +127,16 @@ export default function NovaSolicitacaoScreen({ onNavigate }: Props) {
                     <Label className="text-xs">Observações</Label>
                     <Textarea placeholder="Informações adicionais, especificações, marcas preferidas..." className="text-sm min-h-[60px]" />
                   </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Sugestão de Fornecedor</Label>
+                      <Input placeholder="Ex: Casa do Café" className="h-9 text-sm" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs flex items-center gap-1"><Link2 className="h-3 w-3" /> Link de Referência</Label>
+                      <Input placeholder="https://..." className="h-9 text-sm" />
+                    </div>
+                  </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs">Anexo (opcional)</Label>
                     <Input type="file" className="h-9 text-sm" />
@@ -161,7 +171,7 @@ export default function NovaSolicitacaoScreen({ onNavigate }: Props) {
                 <li>• Itens acima de R$ 500 precisam de aprovação executiva</li>
                 <li>• Anexe referências de produto quando possível</li>
                 <li>• A data limite deve ter pelo menos 3 dias úteis para compras normais</li>
-                <li>• Compras recorrentes podem ser automatizadas — converse com Rafael</li>
+                <li>• Compras recorrentes podem ser automatizadas — fale com o setor de compras</li>
               </ul>
             </CardContent>
           </Card>
@@ -171,12 +181,12 @@ export default function NovaSolicitacaoScreen({ onNavigate }: Props) {
               <p className="text-xs font-semibold mb-3">Fluxo após envio</p>
               <div className="space-y-2.5">
                 {[
-                  "1. Rafael recebe e analisa",
+                  "1. Compras recebe e analisa",
                   "2. Cotação com fornecedores",
                   "3. Comparação de propostas",
                   "4. Aprovação da liderança",
-                  "5. Negociação final (Janete)",
-                  "6. Pagamento (Michele)",
+                  "5. Negociação final (Controladoria)",
+                  "6. Pagamento (Financeiro)",
                   "7. Entrega e conferência",
                 ].map((step, i) => (
                   <div key={i} className="flex items-center gap-2">
@@ -185,6 +195,16 @@ export default function NovaSolicitacaoScreen({ onNavigate }: Props) {
                   </div>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-sm bg-muted/30">
+            <CardContent className="p-5">
+              <p className="text-xs font-semibold mb-2">Acompanhamento</p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Após o envio, você poderá acompanhar o andamento da sua solicitação pela Central de Solicitações. 
+                Notificações serão enviadas a cada mudança de status.
+              </p>
             </CardContent>
           </Card>
         </div>

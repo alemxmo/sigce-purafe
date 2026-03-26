@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
-  Search, Filter, Eye, Send, FileText, RotateCcw, MessageSquare,
-  AlertCircle, Clock, ChevronRight, Plus, Paperclip, CheckCircle2, User
+  Search, Send, FileText, RotateCcw, MessageSquare,
+  Clock, ChevronRight, Paperclip, CheckCircle2, User, Copy, ExternalLink, Truck, CreditCard
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,9 +19,10 @@ interface Pedido {
   prazo: string;
   urgencia: "normal" | "alta" | "critica";
   qtd: number;
-  status: "nova" | "em_cotacao" | "aguardando_complemento" | "aguardando_aprovacao";
+  status: "nova" | "em_cotacao" | "aguardando_complemento" | "aguardando_aprovacao" | "aguardando_pagamento" | "em_logistica";
   cotacoes: number;
   melhorPreco?: string;
+  fornecedor?: string;
   comentarios: { texto: string; por: string; data: string }[];
   checklist: { item: string; done: boolean }[];
 }
@@ -42,9 +43,10 @@ const pedidos: Pedido[] = [
     id: 2, item: "Kit Café (4x Melitta, 2x Açúcar, 3000x Mexedor, 500x Copos, 2x Jarras)",
     solicitante: "Pr. Rafael Diniz", area: "Central de Atendimento", centroCusto: "CENTRAL",
     prazo: "15/03", urgencia: "alta", qtd: 1, status: "em_cotacao", cotacoes: 3, melhorPreco: "R$ 389,61",
+    fornecedor: "Casa do Café",
     comentarios: [
       { texto: "Estoque de café acabou completamente.", por: "Pr. Rafael Diniz", data: "09/03 14:30" },
-      { texto: "3 cotações recebidas. Casa do Café tem melhor preço.", por: "Rafael", data: "10/03 08:00" },
+      { texto: "3 cotações recebidas. Casa do Café tem melhor preço.", por: "Compras", data: "10/03 08:00" },
     ],
     checklist: [
       { item: "Verificar fornecedores cadastrados", done: true },
@@ -68,11 +70,11 @@ const pedidos: Pedido[] = [
   {
     id: 3, item: "Material de Limpeza (Desinfetante, Detergente, Pano, Luvas)", solicitante: "Michele",
     area: "Administrativo", centroCusto: "SEDE", prazo: "12/03", urgencia: "normal", qtd: 1,
-    status: "aguardando_aprovacao", cotacoes: 3, melhorPreco: "R$ 780,00",
+    status: "aguardando_aprovacao", cotacoes: 3, melhorPreco: "R$ 780,00", fornecedor: "Dousystem",
     comentarios: [
       { texto: "Reposição mensal.", por: "Michele", data: "07/03 10:00" },
-      { texto: "Dousystem tem melhor preço e prazo.", por: "Rafael", data: "08/03 09:00" },
-      { texto: "Enviado para aprovação da Bispa.", por: "Rafael", data: "08/03 09:30" },
+      { texto: "Dousystem tem melhor preço e prazo.", por: "Compras", data: "08/03 09:00" },
+      { texto: "Enviada para aprovação executiva.", por: "Compras", data: "08/03 09:30" },
     ],
     checklist: [
       { item: "Verificar fornecedores cadastrados", done: true },
@@ -84,10 +86,10 @@ const pedidos: Pedido[] = [
   {
     id: 5, item: "Banner Lona 3x2m — Campanha Páscoa", solicitante: "Dani Criativo",
     area: "Criativo", centroCusto: "CRIATIVO", prazo: "20/03", urgencia: "normal", qtd: 2,
-    status: "em_cotacao", cotacoes: 2, melhorPreco: "R$ 340,00",
+    status: "em_cotacao", cotacoes: 2, melhorPreco: "R$ 340,00", fornecedor: "Print Express",
     comentarios: [
       { texto: "Preciso de 2 banners iguais, arte já pronta.", por: "Dani", data: "08/03 14:00" },
-      { texto: "2 cotações recebidas, aguardando terceira.", por: "Rafael", data: "09/03 16:00" },
+      { texto: "2 cotações recebidas, aguardando terceira.", por: "Compras", data: "09/03 16:00" },
     ],
     checklist: [
       { item: "Verificar fornecedores cadastrados", done: true },
@@ -102,13 +104,44 @@ const pedidos: Pedido[] = [
     status: "aguardando_complemento", cotacoes: 1,
     comentarios: [
       { texto: "Precisamos de pilhas AA, não AAA.", por: "Sound Team", data: "09/03 08:00" },
-      { texto: "Devolvido: especificar marca preferida e se aceita recarregável.", por: "Rafael", data: "09/03 10:00" },
+      { texto: "Devolvido: especificar marca preferida e se aceita recarregável.", por: "Compras", data: "09/03 10:00" },
     ],
     checklist: [
       { item: "Verificar fornecedores cadastrados", done: true },
       { item: "Solicitar cotação", done: true },
       { item: "Comparar preços", done: false },
       { item: "Enviar para aprovação", done: false },
+    ],
+  },
+  {
+    id: 7, item: "Retiro Fazenda Pura Fé — Locação + Alimentação", solicitante: "Eventos",
+    area: "Eventos", centroCusto: "EVENTOS", prazo: "20/03", urgencia: "normal", qtd: 1,
+    status: "aguardando_pagamento", cotacoes: 3, melhorPreco: "R$ 6.000,00", fornecedor: "Fazenda Pura Fé Eventos",
+    comentarios: [
+      { texto: "Retiro de liderança confirmado para 80 participantes.", por: "Eventos", data: "05/03 10:00" },
+      { texto: "Aprovação executiva confirmada.", por: "Aprovação", data: "08/03 14:00" },
+      { texto: "Saving de R$ 250 registrado pela Controladoria.", por: "Controladoria", data: "08/03 16:00" },
+    ],
+    checklist: [
+      { item: "Verificar fornecedores cadastrados", done: true },
+      { item: "Solicitar cotação", done: true },
+      { item: "Comparar preços", done: true },
+      { item: "Enviar para aprovação", done: true },
+    ],
+  },
+  {
+    id: 8, item: "Copos Biodegradáveis 60ml (1000 un)", solicitante: "Central",
+    area: "Central de Atendimento", centroCusto: "CENTRAL", prazo: "10/03", urgencia: "normal", qtd: 1,
+    status: "em_logistica", cotacoes: 2, melhorPreco: "R$ 520,00", fornecedor: "Dousystem",
+    comentarios: [
+      { texto: "Pagamento efetuado via Pix.", por: "Financeiro", data: "09/03 11:00" },
+      { texto: "Fornecedor informou despacho para hoje.", por: "Compras", data: "10/03 08:00" },
+    ],
+    checklist: [
+      { item: "Verificar fornecedores cadastrados", done: true },
+      { item: "Solicitar cotação", done: true },
+      { item: "Comparar preços", done: true },
+      { item: "Enviar para aprovação", done: true },
     ],
   },
 ];
@@ -118,6 +151,8 @@ const columns: { status: string; label: string; color: string }[] = [
   { status: "em_cotacao", label: "Em Cotação", color: "bg-warning" },
   { status: "aguardando_complemento", label: "Aguard. Complemento", color: "bg-destructive" },
   { status: "aguardando_aprovacao", label: "Aguard. Aprovação", color: "bg-success" },
+  { status: "aguardando_pagamento", label: "Aguard. Pagamento", color: "bg-primary" },
+  { status: "em_logistica", label: "Em Logística", color: "bg-warning" },
 ];
 
 const urgenciaColor: Record<string, string> = {
@@ -139,9 +174,23 @@ export default function MesaRafaelScreen() {
       aprovar: `"${pedido.item}" enviado para aprovação executiva`,
       devolver: `"${pedido.item}" devolvido ao solicitante para ajuste`,
       consolidar: `Pedido "${pedido.item}" consolidado com sucesso`,
+      pagamento: `"${pedido.item}" encaminhado para pagamento`,
+      logistica: `"${pedido.item}" registrado na logística`,
+      aprovacao_recebida: `Aprovação registrada para "${pedido.item}"`,
     };
     toast({ title: "✅ Ação Realizada", description: msgs[action] || "Ação executada." });
     setSelected(null);
+  };
+
+  const handleCopyWhatsApp = (pedido: Pedido) => {
+    const msg = `*SIGCE — Solicitação de Cotação*\n\nOlá! Gostaríamos de solicitar cotação para o seguinte item:\n\n📦 *Item:* ${pedido.item}\n📊 *Quantidade:* ${pedido.qtd}\n📅 *Prazo desejado:* ${pedido.prazo}\n🏢 *Centro de Custo:* ${pedido.centroCusto}\n\nPor favor, envie:\n- Valor unitário e total\n- Prazo de entrega\n- Forma de pagamento\n- Frete (se houver)\n\nAgradecemos o retorno!`;
+    navigator.clipboard.writeText(msg);
+    toast({ title: "📋 Mensagem Copiada", description: "Cole no WhatsApp para enviar ao fornecedor." });
+  };
+
+  const handleOpenWhatsApp = (pedido: Pedido) => {
+    const msg = encodeURIComponent(`*SIGCE — Solicitação de Cotação*\n\nItem: ${pedido.item}\nQuantidade: ${pedido.qtd}\nPrazo: ${pedido.prazo}\n\nPor favor, envie cotação com valor, prazo e frete.`);
+    window.open(`https://wa.me/?text=${msg}`, "_blank");
   };
 
   return (
@@ -149,7 +198,7 @@ export default function MesaRafaelScreen() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
         <div className="flex-1">
-          <p className="text-xs text-muted-foreground">Workspace operacional — gerencie todas as solicitações em um só lugar.</p>
+          <p className="text-xs text-muted-foreground">Workspace operacional — gerencie todas as solicitações de compra em um só lugar.</p>
         </div>
         <div className="relative w-full sm:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -158,7 +207,7 @@ export default function MesaRafaelScreen() {
       </div>
 
       {/* Kanban Columns */}
-      <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6 gap-4">
         {columns.map(col => {
           const items = getByStatus(col.status);
           return (
@@ -193,6 +242,9 @@ export default function MesaRafaelScreen() {
                           <span className="text-muted-foreground">{p.cotacoes} cotações</span>
                           {p.melhorPreco && <span className="font-semibold text-success">{p.melhorPreco}</span>}
                         </div>
+                      )}
+                      {p.fornecedor && (
+                        <p className="text-[10px] text-muted-foreground truncate">Fornecedor: {p.fornecedor}</p>
                       )}
                       {/* Checklist progress */}
                       <div className="flex gap-0.5">
@@ -246,7 +298,10 @@ export default function MesaRafaelScreen() {
 
                 {selected.melhorPreco && (
                   <div className="p-3 rounded-lg bg-success/5 flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Melhor preço encontrado</span>
+                    <div>
+                      <span className="text-xs text-muted-foreground">Melhor preço encontrado</span>
+                      {selected.fornecedor && <p className="text-[10px] text-muted-foreground">Fornecedor: {selected.fornecedor}</p>}
+                    </div>
                     <span className="text-sm font-bold text-success">{selected.melhorPreco}</span>
                   </div>
                 )}
@@ -289,11 +344,26 @@ export default function MesaRafaelScreen() {
                     <Button size="sm" variant="outline" className="h-9 text-xs justify-start">
                       <Paperclip className="h-3.5 w-3.5 mr-1.5" /> Anexar Orçamento
                     </Button>
+                    <Button size="sm" variant="outline" className="h-9 text-xs justify-start" onClick={() => handleCopyWhatsApp(selected)}>
+                      <Copy className="h-3.5 w-3.5 mr-1.5" /> Copiar p/ WhatsApp
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-9 text-xs justify-start" onClick={() => handleOpenWhatsApp(selected)}>
+                      <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Abrir WhatsApp
+                    </Button>
                     <Button size="sm" variant="outline" className="h-9 text-xs justify-start text-destructive" onClick={() => handleAction("devolver", selected)}>
                       <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Devolver p/ Ajuste
                     </Button>
                     <Button size="sm" className="h-9 text-xs justify-start bg-success hover:bg-success/90 text-success-foreground" onClick={() => handleAction("aprovar", selected)}>
                       <Send className="h-3.5 w-3.5 mr-1.5" /> Enviar p/ Aprovação
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-9 text-xs justify-start" onClick={() => handleAction("aprovacao_recebida", selected)}>
+                      <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> Registrar Aprovação
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-9 text-xs justify-start" onClick={() => handleAction("pagamento", selected)}>
+                      <CreditCard className="h-3.5 w-3.5 mr-1.5" /> Encaminhar Pagamento
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-9 text-xs justify-start col-span-2" onClick={() => handleAction("logistica", selected)}>
+                      <Truck className="h-3.5 w-3.5 mr-1.5" /> Registrar Logística
                     </Button>
                   </div>
                 </div>
