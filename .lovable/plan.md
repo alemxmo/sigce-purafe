@@ -1,61 +1,88 @@
 
 
-# Refatoração: Fluxo Estruturado na Central de Compras
+# Plano de Evolução — SIGCE Pura Fé
 
-## Problema Identificado
+## Resumo das 6 mudanças solicitadas
 
-O drawer lateral da Central de Compras tem 9 botões soltos em "Ações Rápidas" — todos disparam apenas um toast genérico. Não há formulários, não há fluxo, não há conexão entre telas. O mockup não demonstra que o sistema guia o operador passo a passo.
+1. **Formulário de cadastro de fornecedores** na tela Base de Fornecedores
+2. **Fluxo de "Solicitar Complemento"** nas Novas Solicitações (devolver ao solicitante)
+3. **Central de Compras como CRM horizontal** com colunas e scroll lateral
+4. **Cotações redesenhadas** — enviar TODOS os orçamentos para aprovação (sem pré-seleção) + reformular tela de Aprovação para mostrar cotações detalhadas
+5. **Menu de Configurações** com controle de usuários e permissões
+6. **Renomear para "SIGCE — PURA FÉ"** na sidebar e header
 
-## Solução
+---
 
-Substituir o bloco de "Ações Rápidas" por um sistema de **Próximo Passo contextual** baseado no status do pedido + mini-formulários inline para cada ação. Isso transforma o drawer de uma lista de botões numa experiência de workflow real.
+## 1. Formulário de Cadastro de Fornecedores (`FornecedoresScreen.tsx`)
 
-## Mudanças no MesaRafaelScreen.tsx
+- Adicionar botão "+ Novo Fornecedor" ao lado da busca
+- Ao clicar, abrir um `Sheet` (drawer lateral) com formulário completo:
+  - Nome Fantasia, Razão Social, CNPJ, Categoria (select), Telefone, WhatsApp, Cidade, Lead Time, Banco, Pix, Score inicial
+  - Toggle "Fornecedor Preferencial"
+  - Botão "Salvar Fornecedor" que adiciona ao estado local e exibe toast de confirmação
+- O novo fornecedor aparece imediatamente na tabela
 
-### 1. Ações contextuais por status (em vez de 9 botões sempre visíveis)
+## 2. Fluxo de Complemento (`SolicitacoesScreen.tsx`)
 
-Cada status mostra apenas as ações relevantes àquele estágio:
+- Na tabela de solicitações, ao abrir o detalhe (Sheet) de uma solicitação com status `nova`:
+  - Adicionar seção "Ações" com botão **"Solicitar Complemento"**
+  - Ao clicar, exibir textarea inline para descrever quais informações faltam
+  - Botão "Enviar Solicitação de Complemento" muda o status para `devolvida` e registra na timeline
+  - O card na tabela mostra badge "Devolvida" em vermelho
+- Solicitações com status `devolvida` mostram ação "Registrar Complemento Recebido" que retorna para `nova`
+- Transformar dados de `solicitacoes` em `useState` para permitir mutação local
 
-| Status | Ação principal | Formulário inline |
-|--------|---------------|-------------------|
-| `nova` | "Iniciar Cotação" | Select de fornecedores (da base mockada) + botão copiar msg WhatsApp + botão abrir WhatsApp |
-| `em_cotacao` | "Registrar Cotação" | Mini-form: fornecedor (select), valor, prazo, frete, obs + botão salvar |
-| `em_cotacao` (com cotações) | "Comparar e Avançar" | Tabela comparativa inline + botão "Enviar p/ Aprovação" |
-| `aguardando_complemento` | "Devolver ao Solicitante" | Textarea com motivo + botão enviar |
-| `aguardando_aprovacao` | "Registrar Aprovação" | Toggle aprovado/recusado + campo observação |
-| `aguardando_pagamento` | "Encaminhar Pagamento" | Dados bancários do fornecedor + Pix copiável + botão confirmar |
-| `em_logistica` | "Registrar Recebimento" | Checkbox conferência + campo divergência + botão finalizar |
+## 3. Central de Compras — Layout CRM Horizontal (`MesaRafaelScreen.tsx`)
 
-### 2. Seção "Fornecedores vinculados" no drawer
+- Substituir o grid responsivo (`grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6`) por um container `flex` com `overflow-x-auto` e scroll horizontal
+- Cada coluna tem largura fixa (`min-w-[280px] w-[280px]`) para garantir visibilidade consistente
+- Todas as 6 colunas visíveis com rolagem horizontal suave, estilo pipeline/CRM
+- Cards dentro de cada coluna continuam com scroll vertical (`max-h-[calc(100vh-280px)] overflow-y-auto`)
+- Adicionar barra de resumo no topo mostrando contagem por coluna em badges horizontais
 
-Abaixo do resumo do pedido, adicionar uma seção que mostra fornecedores já vinculados a esse pedido (com cotação registrada) e um botão "+ Adicionar Fornecedor" que abre um select com a base de fornecedores mockados.
+## 4. Cotações e Aprovação — Redesenho do fluxo
 
-### 3. Stepper visual de progresso
+### `CotacoesScreen.tsx` — Remover pré-seleção
+- Remover o botão "Selecionar" de cada linha da tabela
+- Remover lógica de `selecionado` state
+- Manter tabela comparativa com destaque do melhor preço (badge "Melhor Preço")
+- Botão principal: **"Enviar Todas as Cotações para Aprovação"** — envia o pacote completo
+- Toast confirma: "Cotações enviadas para aprovação executiva"
 
-Substituir a barra de checklist por um stepper horizontal no topo do drawer mostrando as etapas do fluxo com o estágio atual destacado:
+### `AprovacaoScreen.tsx` — Reformular com visão de cotações
+- Cada card de aprovação agora inclui seção **"Cotações Recebidas"** com tabela comparativa inline:
+  - Fornecedor, Valor Total, Frete, Prazo, Pagamento, Obs
+  - Badge "Melhor Preço" no mais barato
+  - Badge "Mais Rápido" no menor prazo
+- Adicionar campo de seleção: ao aprovar, o aprovador **seleciona qual fornecedor** via radio buttons dentro da tabela de cotações
+- Botão "Aprovar" só fica habilitado após selecionar um fornecedor
+- Saving calculado automaticamente: diferença entre o fornecedor selecionado e o mais caro
 
-```text
-Solicitação → Cotação → Aprovação → Pagamento → Logística → Entregue
-     ●────────●────────○────────○────────○────────○
-```
+## 5. Menu de Configurações (`ConfiguracoesScreen.tsx` — novo arquivo)
 
-### 4. Estado local para simular fluxo
+- Adicionar item "Configurações" no final da sidebar (grupo "Sistema"), com ícone `Settings`
+- Tela com 2 abas (Tabs):
+  - **Usuários**: tabela mockada com colunas Nome, E-mail, Perfil (Admin/Comprador/Solicitante/Aprovador/Financeiro), Status (Ativo/Inativo), Último Acesso
+  - **Sistema**: cards de configuração mockados (Notificações, Centros de Custo, Categorias, Regras de Aprovação)
+- Botão "+ Novo Usuário" com drawer de cadastro simulado
 
-Usar `useState` para gerenciar a lista de pedidos de forma mutável, permitindo que ações realmente movam cards entre colunas do Kanban durante a apresentação.
+## 6. Renomear para "SIGCE — PURA FÉ" (`Index.tsx`)
 
-### 5. Ação secundária sempre disponível
+- Sidebar: `SIGCE` → `SIGCE — PURA FÉ`
+- Subtítulo mantém "Sistema Integrado de Gestão de Compras e Estoque"
+- Footer da sidebar: "Pura Fé • SIGCE v2.0"
 
-Manter como ações secundárias (texto pequeno, sem destaque) apenas: "Devolver p/ Ajuste" e "Adicionar Comentário" — disponíveis em qualquer status.
+---
 
 ## Arquivos modificados
 
-- **`src/components/sigce/MesaRafaelScreen.tsx`** — Refatoração completa do drawer: stepper, ações contextuais com mini-forms, fornecedores vinculados, estado mutável dos pedidos
-- **`src/pages/Index.tsx`** — Sem alteração
-
-## O que NÃO muda
-
-- Kanban board e cards (preservados)
-- Layout geral e sidebar
-- Visual identity e cores
-- Demais telas do sistema
+| Arquivo | Tipo de mudança |
+|---------|----------------|
+| `Index.tsx` | Renomear título, adicionar rota `configuracoes`, adicionar menu item |
+| `FornecedoresScreen.tsx` | Adicionar formulário de cadastro via Sheet |
+| `SolicitacoesScreen.tsx` | Estado mutável, ações de complemento no drawer |
+| `MesaRafaelScreen.tsx` | Layout flex horizontal com scroll |
+| `CotacoesScreen.tsx` | Remover seleção individual, enviar todas |
+| `AprovacaoScreen.tsx` | Tabela de cotações inline, seleção do fornecedor pelo aprovador |
+| `ConfiguracoesScreen.tsx` | Novo arquivo — Usuários e configurações do sistema |
 
