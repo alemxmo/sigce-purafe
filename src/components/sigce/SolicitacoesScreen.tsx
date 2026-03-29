@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Search, Plus, Eye, Clock, AlertCircle, Filter, ChevronRight, User, Calendar, MapPin } from "lucide-react";
+import { Search, Plus, Eye, Clock, AlertCircle, Filter, ChevronRight, User, Calendar, MapPin, RotateCcw, Send } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { toast } from "@/hooks/use-toast";
 
 interface Props {
   onNavigate: (screen: string) => void;
@@ -26,38 +28,39 @@ interface Solicitacao {
   status: "nova" | "em_cotacao" | "aguardando_aprovacao" | "devolvida" | "aprovada";
   responsavel: string;
   criadoEm: string;
+  motivoDevolucao?: string;
   timeline: { data: string; acao: string; por: string }[];
 }
 
-const solicitacoes: Solicitacao[] = [
+const initialSolicitacoes: Solicitacao[] = [
   {
     id: 1, solicitante: "Caslu", telefone: "(11) 99999-1234", area: "Iluminação", centroCusto: "LOUVOR",
     item: "Líquido p/ Máquina de Haze (Galão 05L)", categoria: "Consumíveis", qtd: 2,
     dataLimite: "Próximo domingo", urgencia: "critica", justificativa: "Sem líquido, haze não funciona no culto.",
-    status: "nova", responsavel: "Rafael", criadoEm: "Há 2h",
+    status: "nova", responsavel: "Compras", criadoEm: "Há 2h",
     timeline: [{ data: "10/03 09:15", acao: "Solicitação criada", por: "Caslu" }],
   },
   {
     id: 2, solicitante: "Pr. Rafael Diniz", telefone: "(11) 98888-5678", area: "Central de Atendimento", centroCusto: "CENTRAL",
     item: "Kit Café (4x Melitta, 2x Açúcar, 3000x Mexedor, 500x Copos, 2x Jarras)", categoria: "Copa & Cozinha", qtd: 1,
     dataLimite: "15/03", urgencia: "alta", justificativa: "Estoque de café acabou, atendemos 200+ pessoas/semana.",
-    status: "em_cotacao", responsavel: "Rafael", criadoEm: "Há 1 dia",
+    status: "em_cotacao", responsavel: "Compras", criadoEm: "Há 1 dia",
     timeline: [
       { data: "09/03 14:30", acao: "Solicitação criada", por: "Pr. Rafael Diniz" },
-      { data: "09/03 16:00", acao: "Aceita por Rafael", por: "Rafael" },
-      { data: "10/03 08:00", acao: "3 cotações solicitadas", por: "Rafael" },
+      { data: "09/03 16:00", acao: "Aceita pela equipe de Compras", por: "Compras" },
+      { data: "10/03 08:00", acao: "3 cotações solicitadas", por: "Compras" },
     ],
   },
   {
     id: 3, solicitante: "Michele", telefone: "(11) 97777-9012", area: "Administrativo", centroCusto: "SEDE",
     item: "Material de Limpeza (Desinfetante, Detergente, Pano, Luvas)", categoria: "Limpeza", qtd: 1,
     dataLimite: "12/03", urgencia: "normal", justificativa: "Reposição mensal regular.",
-    status: "aguardando_aprovacao", responsavel: "Rafael", criadoEm: "Há 3 dias",
+    status: "aguardando_aprovacao", responsavel: "Compras", criadoEm: "Há 3 dias",
     timeline: [
       { data: "07/03 10:00", acao: "Solicitação criada", por: "Michele" },
-      { data: "07/03 15:00", acao: "Cotações recebidas (3)", por: "Rafael" },
-      { data: "08/03 09:00", acao: "Melhor cotação: Dousystem R$ 780,00", por: "Rafael" },
-      { data: "08/03 09:30", acao: "Enviada para aprovação", por: "Rafael" },
+      { data: "07/03 15:00", acao: "Cotações recebidas (3)", por: "Compras" },
+      { data: "08/03 09:00", acao: "Melhor cotação: Dousystem R$ 780,00", por: "Compras" },
+      { data: "08/03 09:30", acao: "Enviada para aprovação", por: "Compras" },
     ],
   },
   {
@@ -71,11 +74,22 @@ const solicitacoes: Solicitacao[] = [
     id: 5, solicitante: "Dani Criativo", telefone: "(11) 95555-7890", area: "Criativo", centroCusto: "CRIATIVO",
     item: "Banner Lona 3x2m — Campanha Páscoa", categoria: "Comunicação Visual", qtd: 2,
     dataLimite: "20/03", urgencia: "normal", justificativa: "Campanha de Páscoa inicia dia 25/03.",
-    status: "em_cotacao", responsavel: "Rafael", criadoEm: "Há 2 dias",
+    status: "em_cotacao", responsavel: "Compras", criadoEm: "Há 2 dias",
     timeline: [
       { data: "08/03 14:00", acao: "Solicitação criada", por: "Dani Criativo" },
-      { data: "08/03 17:00", acao: "Aceita por Rafael", por: "Rafael" },
-      { data: "09/03 10:00", acao: "Cotação solicitada a 2 fornecedores", por: "Rafael" },
+      { data: "08/03 17:00", acao: "Aceita pela equipe de Compras", por: "Compras" },
+      { data: "09/03 10:00", acao: "Cotação solicitada a 2 fornecedores", por: "Compras" },
+    ],
+  },
+  {
+    id: 6, solicitante: "Sound Team", telefone: "(11) 94444-0000", area: "Louvor", centroCusto: "LOUVOR",
+    item: "Pilhas p/ Microfone AA (caixa c/48)", categoria: "Áudio", qtd: 2,
+    dataLimite: "14/03", urgencia: "alta", justificativa: "Precisamos de pilhas AA para os microfones sem fio.",
+    status: "devolvida", responsavel: "Compras", criadoEm: "Há 1 dia",
+    motivoDevolucao: "Especificar marca preferida e se aceita recarregável.",
+    timeline: [
+      { data: "09/03 08:00", acao: "Solicitação criada", por: "Sound Team" },
+      { data: "09/03 10:00", acao: "Devolvida: especificar marca e tipo", por: "Compras" },
     ],
   },
 ];
@@ -95,10 +109,13 @@ const urgenciaConfig: Record<string, { label: string; color: string }> = {
 };
 
 export default function SolicitacoesScreen({ onNavigate }: Props) {
+  const [solicitacoes, setSolicitacoes] = useState(initialSolicitacoes);
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [filtroCc, setFiltroCc] = useState("todos");
   const [busca, setBusca] = useState("");
   const [selected, setSelected] = useState<Solicitacao | null>(null);
+  const [complementoMode, setComplementoMode] = useState(false);
+  const [complementoTexto, setComplementoTexto] = useState("");
 
   const filtered = solicitacoes.filter(s => {
     if (filtroStatus !== "todos" && s.status !== filtroStatus) return false;
@@ -109,14 +126,49 @@ export default function SolicitacoesScreen({ onNavigate }: Props) {
 
   const countByStatus = (st: string) => solicitacoes.filter(s => s.status === st).length;
 
+  const handleSolicitarComplemento = () => {
+    if (!selected || !complementoTexto.trim()) return;
+    const now = new Date();
+    const dataStr = now.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }) + " " + now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    setSolicitacoes(prev => prev.map(s =>
+      s.id === selected.id ? {
+        ...s,
+        status: "devolvida" as const,
+        motivoDevolucao: complementoTexto,
+        timeline: [...s.timeline, { data: dataStr, acao: `Devolvida: ${complementoTexto}`, por: "Compras" }],
+      } : s
+    ));
+    setSelected(prev => prev ? { ...prev, status: "devolvida", motivoDevolucao: complementoTexto, timeline: [...prev.timeline, { data: dataStr, acao: `Devolvida: ${complementoTexto}`, por: "Compras" }] } : null);
+    setComplementoMode(false);
+    setComplementoTexto("");
+    toast({ title: "📋 Solicitação Devolvida", description: "O solicitante foi notificado para complementar as informações." });
+  };
+
+  const handleRegistrarComplemento = () => {
+    if (!selected) return;
+    const now = new Date();
+    const dataStr = now.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }) + " " + now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    setSolicitacoes(prev => prev.map(s =>
+      s.id === selected.id ? {
+        ...s,
+        status: "nova" as const,
+        motivoDevolucao: undefined,
+        timeline: [...s.timeline, { data: dataStr, acao: "Complemento recebido, solicitação reaberta", por: "Solicitante" }],
+      } : s
+    ));
+    setSelected(prev => prev ? { ...prev, status: "nova", motivoDevolucao: undefined, timeline: [...prev.timeline, { data: dataStr, acao: "Complemento recebido, solicitação reaberta", por: "Solicitante" }] } : null);
+    toast({ title: "✅ Complemento Recebido", description: "Solicitação reaberta e pronta para cotação." });
+  };
+
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         {[
           { label: "Novas", count: countByStatus("nova"), color: "text-primary" },
           { label: "Em Cotação", count: countByStatus("em_cotacao"), color: "text-warning" },
           { label: "Aguard. Aprovação", count: countByStatus("aguardando_aprovacao"), color: "text-success" },
+          { label: "Devolvidas", count: countByStatus("devolvida"), color: "text-destructive" },
           { label: "Total Abertas", count: solicitacoes.length, color: "text-foreground" },
         ].map(s => (
           <Card key={s.label} className="border-0 shadow-sm">
@@ -141,6 +193,7 @@ export default function SolicitacoesScreen({ onNavigate }: Props) {
             <SelectItem value="nova">Novas</SelectItem>
             <SelectItem value="em_cotacao">Em Cotação</SelectItem>
             <SelectItem value="aguardando_aprovacao">Aguard. Aprovação</SelectItem>
+            <SelectItem value="devolvida">Devolvidas</SelectItem>
           </SelectContent>
         </Select>
         <Select value={filtroCc} onValueChange={setFiltroCc}>
@@ -160,7 +213,7 @@ export default function SolicitacoesScreen({ onNavigate }: Props) {
         </Button>
       </div>
 
-      {/* Table-like cards */}
+      {/* Table */}
       <Card className="border-0 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -181,7 +234,7 @@ export default function SolicitacoesScreen({ onNavigate }: Props) {
                 const st = statusConfig[s.status];
                 const urg = urgenciaConfig[s.urgencia];
                 return (
-                  <tr key={s.id} className="border-b border-border/40 hover:bg-muted/20 cursor-pointer transition-colors" onClick={() => setSelected(s)}>
+                  <tr key={s.id} className="border-b border-border/40 hover:bg-muted/20 cursor-pointer transition-colors" onClick={() => { setSelected(s); setComplementoMode(false); setComplementoTexto(""); }}>
                     <td className="px-4 py-3 text-xs text-muted-foreground font-mono">#{String(s.id).padStart(3, '0')}</td>
                     <td className="px-4 py-3">
                       <p className="font-medium text-xs truncate max-w-[250px]">{s.item}</p>
@@ -202,7 +255,7 @@ export default function SolicitacoesScreen({ onNavigate }: Props) {
       </Card>
 
       {/* Detail Sheet */}
-      <Sheet open={!!selected} onOpenChange={() => setSelected(null)}>
+      <Sheet open={!!selected} onOpenChange={() => { setSelected(null); setComplementoMode(false); }}>
         <SheetContent className="w-full sm:max-w-md overflow-y-auto">
           {selected && (
             <>
@@ -236,6 +289,47 @@ export default function SolicitacoesScreen({ onNavigate }: Props) {
                   <p className="text-[10px] text-muted-foreground">Justificativa</p>
                   <p className="text-xs mt-1">{selected.justificativa}</p>
                 </div>
+
+                {/* Devolvida alert */}
+                {selected.status === "devolvida" && selected.motivoDevolucao && (
+                  <div className="p-3 rounded-lg border border-destructive/20 bg-destructive/5">
+                    <p className="text-xs font-semibold text-destructive mb-1 flex items-center gap-1.5">
+                      <AlertCircle className="h-3.5 w-3.5" /> Solicitação Devolvida
+                    </p>
+                    <p className="text-xs text-muted-foreground">{selected.motivoDevolucao}</p>
+                    <Button size="sm" className="mt-3 h-8 text-xs w-full bg-success hover:bg-success/90 text-success-foreground" onClick={handleRegistrarComplemento}>
+                      <RotateCcw className="h-3 w-3 mr-1" /> Registrar Complemento Recebido
+                    </Button>
+                  </div>
+                )}
+
+                {/* Actions for nova status */}
+                {selected.status === "nova" && (
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Ações</p>
+                    {!complementoMode ? (
+                      <Button size="sm" variant="outline" className="w-full h-9 text-xs border-destructive/30 text-destructive hover:bg-destructive/5" onClick={() => setComplementoMode(true)}>
+                        <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Solicitar Complemento
+                      </Button>
+                    ) : (
+                      <div className="p-3 rounded-lg border border-destructive/20 bg-destructive/5 space-y-2">
+                        <p className="text-xs font-semibold text-destructive">Quais informações estão faltando?</p>
+                        <Textarea className="text-xs min-h-[60px]" placeholder="Ex: especificar marca, tamanho, quantidade exata..."
+                          value={complementoTexto} onChange={e => setComplementoTexto(e.target.value)} />
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="ghost" className="flex-1 h-8 text-xs" onClick={() => { setComplementoMode(false); setComplementoTexto(""); }}>
+                            Cancelar
+                          </Button>
+                          <Button size="sm" className="flex-1 h-8 text-xs bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                            onClick={handleSolicitarComplemento} disabled={!complementoTexto.trim()}>
+                            <Send className="h-3 w-3 mr-1" /> Enviar Devolução
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Timeline */}
                 <div>
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">Histórico</p>

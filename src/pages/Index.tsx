@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutDashboard, ShoppingCart, CheckSquare, Landmark, Package, Menu, X, ChevronRight, ShoppingBag, Users, BarChart3, Truck, ClipboardList, FileSpreadsheet } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, CheckSquare, Landmark, Package, Menu, X, ChevronRight, ShoppingBag, Users, BarChart3, Truck, ClipboardList, FileSpreadsheet, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DashboardScreen from "@/components/sigce/DashboardScreen";
 import SolicitacoesScreen from "@/components/sigce/SolicitacoesScreen";
@@ -12,8 +12,9 @@ import ControladoriaScreen from "@/components/sigce/ControladoriaScreen";
 import FinanceiroScreen from "@/components/sigce/FinanceiroScreen";
 import LogisticaScreen from "@/components/sigce/LogisticaScreen";
 import EstoqueScreen from "@/components/sigce/EstoqueScreen";
+import ConfiguracoesScreen from "@/components/sigce/ConfiguracoesScreen";
 
-type Screen = "dashboard" | "solicitacoes" | "nova_solicitacao" | "central_compras" | "fornecedores" | "cotacoes" | "aprovacao" | "controladoria" | "financeiro" | "logistica" | "estoque";
+type Screen = "dashboard" | "solicitacoes" | "nova_solicitacao" | "central_compras" | "fornecedores" | "cotacoes" | "aprovacao" | "controladoria" | "financeiro" | "logistica" | "estoque" | "configuracoes";
 
 interface MenuItem {
   id: Screen;
@@ -34,6 +35,7 @@ const menuItems: MenuItem[] = [
   { id: "financeiro", label: "Pagamentos", sublabel: "Contas a pagar", icon: Landmark, group: "Financeiro" },
   { id: "logistica", label: "Logística", sublabel: "Entregas e recebimento", icon: Truck, group: "Entrega" },
   { id: "estoque", label: "Estoque", sublabel: "Controle de itens", icon: Package, group: "Entrega" },
+  { id: "configuracoes", label: "Configurações", sublabel: "Usuários e sistema", icon: Settings, group: "Sistema" },
 ];
 
 const screenTitles: Record<Screen, string> = {
@@ -48,6 +50,7 @@ const screenTitles: Record<Screen, string> = {
   financeiro: "Pagamentos e Financeiro",
   logistica: "Logística e Recebimento",
   estoque: "Gestão de Estoque",
+  configuracoes: "Configurações do Sistema",
 };
 
 const Index = () => {
@@ -69,10 +72,10 @@ const Index = () => {
       case "financeiro": return <FinanceiroScreen />;
       case "logistica": return <LogisticaScreen />;
       case "estoque": return <EstoqueScreen />;
+      case "configuracoes": return <ConfiguracoesScreen />;
     }
   };
 
-  // Group menu items
   const groups = menuItems.reduce<Record<string, MenuItem[]>>((acc, item) => {
     const g = item.group || "Outros";
     if (!acc[g]) acc[g] = [];
@@ -91,7 +94,7 @@ const Index = () => {
       >
         <div className="p-5 flex items-center justify-between shrink-0">
           <div>
-            <h1 className="text-lg font-bold text-white tracking-tight">SIGCE</h1>
+            <h1 className="text-lg font-bold text-white tracking-tight">SIGCE — PURA FÉ</h1>
             <p className="text-[10px] text-sidebar-foreground/60 leading-tight mt-0.5">
               Sistema Integrado de Gestão
               <br />de Compras e Estoque
@@ -130,7 +133,7 @@ const Index = () => {
         </nav>
 
         <div className="p-4 border-t border-sidebar-border shrink-0">
-          <p className="text-[10px] text-sidebar-foreground/40 text-center">Igreja Pura Fé • SIGCE v2.0</p>
+          <p className="text-[10px] text-sidebar-foreground/40 text-center">Pura Fé • SIGCE v2.0</p>
         </div>
       </aside>
 
