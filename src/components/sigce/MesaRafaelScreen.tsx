@@ -163,8 +163,6 @@ const stepperStages: { key: PedidoStatus | "entregue"; label: string }[] = [
   { key: "entregue", label: "Entregue" },
 ];
 
-const statusOrder: PedidoStatus[] = ["nova", "em_cotacao", "aguardando_complemento", "aguardando_aprovacao", "aguardando_pagamento", "em_logistica"];
-
 const urgenciaColor: Record<string, string> = {
   normal: "bg-muted text-muted-foreground",
   alta: "bg-warning/15 text-warning",
@@ -330,7 +328,6 @@ export default function MesaRafaelScreen() {
       case "em_cotacao":
         return (
           <div className="space-y-3">
-            {/* Register new quote */}
             <div className="p-3 rounded-lg border border-warning/20 bg-warning/5">
               <p className="text-xs font-semibold text-warning mb-2 flex items-center gap-1.5">
                 <FileText className="h-3.5 w-3.5" /> Registrar Nova Cotação
@@ -361,7 +358,6 @@ export default function MesaRafaelScreen() {
               </div>
             </div>
 
-            {/* Comparison table if quotes exist */}
             {pedido.cotacoes.length > 0 && (
               <div className="p-3 rounded-lg border border-success/20 bg-success/5">
                 <p className="text-xs font-semibold text-success mb-2 flex items-center gap-1.5">
@@ -402,7 +398,6 @@ export default function MesaRafaelScreen() {
               </div>
             )}
 
-            {/* WhatsApp actions */}
             <div className="flex gap-2">
               <Button size="sm" variant="outline" className="flex-1 h-8 text-xs" onClick={() => handleCopyWhatsApp(pedido)}>
                 <Copy className="h-3 w-3 mr-1" /> Copiar Cotação
@@ -550,59 +545,75 @@ export default function MesaRafaelScreen() {
         </div>
       </div>
 
-      {/* Kanban Columns */}
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6 gap-4">
+      {/* Summary bar */}
+      <div className="flex items-center gap-2 flex-wrap">
         {columns.map(col => {
-          const items = getByStatus(col.status);
+          const count = getByStatus(col.status).length;
           return (
-            <div key={col.status} className="space-y-2">
-              <div className="flex items-center gap-2 px-1">
-                <div className={`h-2 w-2 rounded-full ${col.color}`} />
-                <h3 className="text-xs font-semibold">{col.label}</h3>
-                <Badge variant="secondary" className="ml-auto text-[10px] h-5 px-1.5">{items.length}</Badge>
-              </div>
-              <div className="space-y-2 min-h-[120px] p-2 rounded-xl bg-muted/30">
-                {items.map(p => (
-                  <Card key={p.id} className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer" onClick={() => { setSelectedId(p.id); resetForms(); }}>
-                    <CardContent className="p-3 space-y-2">
-                      <div className="flex items-start justify-between gap-1">
-                        <p className="text-xs font-semibold leading-tight line-clamp-2">{p.item}</p>
-                        <span className="text-[9px] text-muted-foreground font-mono shrink-0">#{String(p.id).padStart(3, '0')}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                        <User className="h-3 w-3" />
-                        <span>{p.solicitante}</span>
-                        <span>•</span>
-                        <span>{p.centroCusto}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <Badge className={`text-[9px] border-0 ${urgenciaColor[p.urgencia]}`}>{p.urgencia === "critica" ? "URGENTE" : p.urgencia === "alta" ? "Alta" : "Normal"}</Badge>
-                        <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                          <Clock className="h-3 w-3" /> {p.prazo}
-                        </span>
-                      </div>
-                      {p.cotacoes.length > 0 && (
-                        <div className="flex items-center justify-between text-[10px]">
-                          <span className="text-muted-foreground">{p.cotacoes.length} cotações</span>
-                          {p.melhorPreco && <span className="font-semibold text-success">{p.melhorPreco}</span>}
-                        </div>
-                      )}
-                      {p.fornecedor && (
-                        <p className="text-[10px] text-muted-foreground truncate">Fornecedor: {p.fornecedor}</p>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-                {items.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-                    <CheckCircle2 className="h-6 w-6 mb-1 opacity-20" />
-                    <p className="text-[10px]">Nenhum pedido</p>
-                  </div>
-                )}
-              </div>
+            <div key={col.status} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50">
+              <div className={`h-2 w-2 rounded-full ${col.color}`} />
+              <span className="text-[10px] font-medium">{col.label}</span>
+              <Badge variant="secondary" className="text-[9px] h-4 px-1.5 ml-0.5">{count}</Badge>
             </div>
           );
         })}
+      </div>
+
+      {/* CRM Horizontal Pipeline */}
+      <div className="overflow-x-auto pb-4 -mx-4 px-4 lg:-mx-6 lg:px-6">
+        <div className="flex gap-4" style={{ minWidth: `${columns.length * 296}px` }}>
+          {columns.map(col => {
+            const items = getByStatus(col.status);
+            return (
+              <div key={col.status} className="w-[280px] min-w-[280px] space-y-2">
+                <div className="flex items-center gap-2 px-1">
+                  <div className={`h-2 w-2 rounded-full ${col.color}`} />
+                  <h3 className="text-xs font-semibold">{col.label}</h3>
+                  <Badge variant="secondary" className="ml-auto text-[10px] h-5 px-1.5">{items.length}</Badge>
+                </div>
+                <div className="space-y-2 p-2 rounded-xl bg-muted/30" style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+                  {items.map(p => (
+                    <Card key={p.id} className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer" onClick={() => { setSelectedId(p.id); resetForms(); }}>
+                      <CardContent className="p-3 space-y-2">
+                        <div className="flex items-start justify-between gap-1">
+                          <p className="text-xs font-semibold leading-tight line-clamp-2">{p.item}</p>
+                          <span className="text-[9px] text-muted-foreground font-mono shrink-0">#{String(p.id).padStart(3, '0')}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                          <User className="h-3 w-3" />
+                          <span>{p.solicitante}</span>
+                          <span>•</span>
+                          <span>{p.centroCusto}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <Badge className={`text-[9px] border-0 ${urgenciaColor[p.urgencia]}`}>{p.urgencia === "critica" ? "URGENTE" : p.urgencia === "alta" ? "Alta" : "Normal"}</Badge>
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                            <Clock className="h-3 w-3" /> {p.prazo}
+                          </span>
+                        </div>
+                        {p.cotacoes.length > 0 && (
+                          <div className="flex items-center justify-between text-[10px]">
+                            <span className="text-muted-foreground">{p.cotacoes.length} cotações</span>
+                            {p.melhorPreco && <span className="font-semibold text-success">{p.melhorPreco}</span>}
+                          </div>
+                        )}
+                        {p.fornecedor && (
+                          <p className="text-[10px] text-muted-foreground truncate">Fornecedor: {p.fornecedor}</p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                  {items.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                      <CheckCircle2 className="h-6 w-6 mb-1 opacity-20" />
+                      <p className="text-[10px]">Nenhum pedido</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Detail Drawer */}
@@ -614,10 +625,8 @@ export default function MesaRafaelScreen() {
                 <SheetTitle className="text-sm">Pedido #{String(selected.id).padStart(3, '0')}</SheetTitle>
               </SheetHeader>
               <div className="mt-4 space-y-4">
-                {/* Stepper */}
                 {renderStepper(selected.status)}
 
-                {/* Summary */}
                 <div>
                   <p className="font-semibold text-sm">{selected.item}</p>
                   <p className="text-xs text-muted-foreground mt-1">{selected.solicitante} • {selected.area} • {selected.centroCusto}</p>
@@ -638,7 +647,6 @@ export default function MesaRafaelScreen() {
                   </div>
                 </div>
 
-                {/* Linked Suppliers */}
                 {selected.fornecedoresVinculados.length > 0 && (
                   <div>
                     <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Fornecedores Vinculados</p>
@@ -650,13 +658,11 @@ export default function MesaRafaelScreen() {
                   </div>
                 )}
 
-                {/* Contextual Actions */}
                 <div>
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Próximo Passo</p>
                   {renderContextualActions(selected)}
                 </div>
 
-                {/* Comments */}
                 <div>
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Histórico</p>
                   <div className="space-y-2">
@@ -677,7 +683,6 @@ export default function MesaRafaelScreen() {
                   </div>
                 </div>
 
-                {/* Secondary actions */}
                 <div className="flex gap-2 pt-2 border-t border-border">
                   <Button size="sm" variant="ghost" className="h-7 text-[10px] text-muted-foreground" onClick={() => {
                     advanceStatus(selected.id, "aguardando_complemento", `"${selected.item}" devolvido para ajuste`);

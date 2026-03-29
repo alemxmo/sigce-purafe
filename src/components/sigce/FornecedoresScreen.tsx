@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Search, Star, Phone, MapPin, Clock, ChevronRight, Building2, CreditCard, MessageSquare } from "lucide-react";
+import { Search, Star, Phone, MapPin, Clock, ChevronRight, Building2, CreditCard, MessageSquare, Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 
@@ -28,7 +30,7 @@ interface Fornecedor {
   historico: { data: string; pedido: string; valor: string }[];
 }
 
-const fornecedores: Fornecedor[] = [
+const initialFornecedores: Fornecedor[] = [
   {
     id: 1, nomeFantasia: "Dousystem", razaoSocial: "Dousystem Comércio LTDA", cnpj: "12.345.678/0001-01",
     categoria: "Limpeza & Descartáveis", telefone: "(11) 3333-1111", whatsapp: "5511933331111",
@@ -96,9 +98,17 @@ const fornecedores: Fornecedor[] = [
   },
 ];
 
+const categorias = ["Limpeza & Descartáveis", "Iluminação & Efeitos", "Copa & Cozinha", "Comunicação Visual", "Eventos & Locação", "Áudio & Eletrônicos", "Alimentação", "Papelaria"];
+
 export default function FornecedoresScreen() {
+  const [fornecedores, setFornecedores] = useState(initialFornecedores);
   const [busca, setBusca] = useState("");
   const [selected, setSelected] = useState<Fornecedor | null>(null);
+  const [cadastroOpen, setCadastroOpen] = useState(false);
+  const [form, setForm] = useState({
+    nomeFantasia: "", razaoSocial: "", cnpj: "", categoria: "", telefone: "", whatsapp: "",
+    cidade: "", leadTime: "", banco: "", pix: "", preferencial: false,
+  });
 
   const filtered = fornecedores.filter(f =>
     !busca || f.nomeFantasia.toLowerCase().includes(busca.toLowerCase()) || f.categoria.toLowerCase().includes(busca.toLowerCase())
@@ -107,6 +117,33 @@ export default function FornecedoresScreen() {
   const handleWhatsApp = (whatsapp: string, nome: string) => {
     window.open(`https://wa.me/${whatsapp}`, "_blank");
     toast({ title: "📱 WhatsApp", description: `Abrindo conversa com ${nome}` });
+  };
+
+  const handleSalvarFornecedor = () => {
+    if (!form.nomeFantasia || !form.cnpj || !form.categoria) return;
+    const novo: Fornecedor = {
+      id: fornecedores.length + 1,
+      nomeFantasia: form.nomeFantasia,
+      razaoSocial: form.razaoSocial || form.nomeFantasia,
+      cnpj: form.cnpj,
+      categoria: form.categoria,
+      telefone: form.telefone,
+      whatsapp: form.whatsapp,
+      cidade: form.cidade,
+      leadTime: form.leadTime || "A definir",
+      status: "ativo",
+      score: 0,
+      ultimoPedido: "—",
+      precoMedio: "—",
+      preferencial: form.preferencial,
+      banco: form.banco,
+      pix: form.pix,
+      historico: [],
+    };
+    setFornecedores(prev => [...prev, novo]);
+    setForm({ nomeFantasia: "", razaoSocial: "", cnpj: "", categoria: "", telefone: "", whatsapp: "", cidade: "", leadTime: "", banco: "", pix: "", preferencial: false });
+    setCadastroOpen(false);
+    toast({ title: "✅ Fornecedor cadastrado", description: `${novo.nomeFantasia} adicionado à base.` });
   };
 
   return (
@@ -126,14 +163,19 @@ export default function FornecedoresScreen() {
           <p className="text-[10px] text-muted-foreground">Ativos</p>
         </CardContent></Card>
         <Card className="border-0 shadow-sm"><CardContent className="p-4">
-          <p className="text-2xl font-bold">6</p>
+          <p className="text-2xl font-bold">{new Set(fornecedores.map(f => f.categoria)).size}</p>
           <p className="text-[10px] text-muted-foreground">Categorias</p>
         </CardContent></Card>
       </div>
 
-      <div className="relative w-full sm:w-72">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-        <Input placeholder="Buscar fornecedor..." className="pl-9 h-9 text-xs" value={busca} onChange={e => setBusca(e.target.value)} />
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1 sm:flex-none sm:w-72">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input placeholder="Buscar fornecedor..." className="pl-9 h-9 text-xs" value={busca} onChange={e => setBusca(e.target.value)} />
+        </div>
+        <Button size="sm" className="h-9 text-xs" onClick={() => setCadastroOpen(true)}>
+          <Plus className="h-3.5 w-3.5 mr-1" /> Novo Fornecedor
+        </Button>
       </div>
 
       {/* Table */}
@@ -236,11 +278,84 @@ export default function FornecedoresScreen() {
                         <span className="text-xs font-semibold">{h.valor}</span>
                       </div>
                     ))}
+                    {selected.historico.length === 0 && (
+                      <p className="text-xs text-muted-foreground py-4 text-center">Nenhuma compra registrada ainda.</p>
+                    )}
                   </div>
                 </div>
               </div>
             </>
           )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Cadastro Sheet */}
+      <Sheet open={cadastroOpen} onOpenChange={setCadastroOpen}>
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="text-sm">Novo Fornecedor</SheetTitle>
+          </SheetHeader>
+          <div className="mt-6 space-y-4">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Nome Fantasia *</label>
+              <Input className="h-9 text-xs" placeholder="Ex: Papelaria Central" value={form.nomeFantasia} onChange={e => setForm(p => ({ ...p, nomeFantasia: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Razão Social</label>
+              <Input className="h-9 text-xs" placeholder="Razão social completa" value={form.razaoSocial} onChange={e => setForm(p => ({ ...p, razaoSocial: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">CNPJ *</label>
+              <Input className="h-9 text-xs" placeholder="00.000.000/0000-00" value={form.cnpj} onChange={e => setForm(p => ({ ...p, cnpj: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Categoria *</label>
+              <Select value={form.categoria} onValueChange={v => setForm(p => ({ ...p, categoria: v }))}>
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Selecione a categoria" /></SelectTrigger>
+                <SelectContent>
+                  {categorias.map(c => <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Telefone</label>
+                <Input className="h-9 text-xs" placeholder="(11) 0000-0000" value={form.telefone} onChange={e => setForm(p => ({ ...p, telefone: e.target.value }))} />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">WhatsApp</label>
+                <Input className="h-9 text-xs" placeholder="5511900000000" value={form.whatsapp} onChange={e => setForm(p => ({ ...p, whatsapp: e.target.value }))} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Cidade</label>
+                <Input className="h-9 text-xs" placeholder="São Paulo - SP" value={form.cidade} onChange={e => setForm(p => ({ ...p, cidade: e.target.value }))} />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Lead Time</label>
+                <Input className="h-9 text-xs" placeholder="Ex: 3 dias" value={form.leadTime} onChange={e => setForm(p => ({ ...p, leadTime: e.target.value }))} />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Dados Bancários</label>
+              <Input className="h-9 text-xs" placeholder="Banco — Ag / CC" value={form.banco} onChange={e => setForm(p => ({ ...p, banco: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Chave Pix</label>
+              <Input className="h-9 text-xs" placeholder="CNPJ, telefone ou e-mail" value={form.pix} onChange={e => setForm(p => ({ ...p, pix: e.target.value }))} />
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/40">
+              <div>
+                <p className="text-xs font-medium">Fornecedor Preferencial</p>
+                <p className="text-[10px] text-muted-foreground">Prioridade nas cotações</p>
+              </div>
+              <Switch checked={form.preferencial} onCheckedChange={v => setForm(p => ({ ...p, preferencial: v }))} />
+            </div>
+            <Button className="w-full h-10 text-xs" onClick={handleSalvarFornecedor} disabled={!form.nomeFantasia || !form.cnpj || !form.categoria}>
+              Salvar Fornecedor
+            </Button>
+          </div>
         </SheetContent>
       </Sheet>
     </div>
