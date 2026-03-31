@@ -31,6 +31,7 @@ interface Pagamento {
   obs?: string;
   comprovante?: boolean;
   anexos: Anexo[];
+  origem?: "compras" | "controladoria";
 }
 
 const initialPagamentos: Pagamento[] = [
@@ -45,6 +46,7 @@ const initialPagamentos: Pagamento[] = [
     id: 2, fornecedor: "IPTU 2/10", descricao: "Imposto Territorial", vencimento: "Amanhã",
     valor: "R$ 4.678,38", categoria: "Boleto", centroCusto: "CENTRAL", status: "pendente",
     formaPagamento: "Boleto", responsavel: "Financeiro",
+    origem: "controladoria",
     anexos: [],
   },
   {
@@ -230,7 +232,12 @@ export default function FinanceiroScreen() {
                     <TableCell className="text-xs font-bold text-right">{p.valor}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">{p.formaPagamento}</TableCell>
                     <TableCell><Badge variant="secondary" className="text-[10px]">{p.centroCusto}</Badge></TableCell>
-                    <TableCell><Badge className={`text-[10px] border-0 ${st.color}`}>{st.label}</Badge></TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <Badge className={`text-[10px] border-0 ${st.color}`}>{st.label}</Badge>
+                        {p.origem === "controladoria" && <Badge className="text-[9px] border-0 bg-muted text-muted-foreground">Direto</Badge>}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {tiposAnexados.length > 0 ? tiposAnexados.map(t => (
