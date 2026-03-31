@@ -46,6 +46,7 @@ const initialPagamentos: Pagamento[] = [
     id: 2, fornecedor: "IPTU 2/10", descricao: "Imposto Territorial", vencimento: "Amanhã",
     valor: "R$ 4.678,38", categoria: "Boleto", centroCusto: "CENTRAL", status: "pendente",
     formaPagamento: "Boleto", responsavel: "Financeiro",
+    origem: "controladoria",
     anexos: [],
   },
   {
