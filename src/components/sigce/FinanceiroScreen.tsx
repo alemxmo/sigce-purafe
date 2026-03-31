@@ -31,6 +31,7 @@ interface Pagamento {
   obs?: string;
   comprovante?: boolean;
   anexos: Anexo[];
+  origem?: "compras" | "controladoria";
 }
 
 const initialPagamentos: Pagamento[] = [
