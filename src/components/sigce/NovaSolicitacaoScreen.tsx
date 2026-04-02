@@ -59,12 +59,9 @@ export default function NovaSolicitacaoScreen({ onNavigate }: Props) {
                     <Select>
                       <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Selecione" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="SEDE">SEDE</SelectItem>
-                        <SelectItem value="CENTRAL">CENTRAL</SelectItem>
-                        <SelectItem value="EVENTOS">EVENTOS</SelectItem>
-                        <SelectItem value="KIDS">KIDS</SelectItem>
-                        <SelectItem value="LOUVOR">LOUVOR</SelectItem>
-                        <SelectItem value="CRIATIVO">CRIATIVO</SelectItem>
+                        <SelectItem value="SEDE">Sede</SelectItem>
+                        <SelectItem value="INSTITUTO">Instituto Pura Fé</SelectItem>
+                        <SelectItem value="CENTRAL">Central de Atendimento</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
