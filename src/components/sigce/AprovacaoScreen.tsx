@@ -81,7 +81,7 @@ export default function AprovacaoScreen() {
     const item = items.find(i => i.id === id);
     if (!item?.fornecedorSelecionado) return;
     setItems(prev => prev.map(i => i.id === id ? { ...i, aprovado: true } : i));
-    toast({ title: "✅ Compra Aprovada", description: `${item.titulo} — Fornecedor: ${item.fornecedorSelecionado}. Encaminhado para pagamento.` });
+    toast({ title: "✅ Compra Aprovada", description: `${item.titulo} — Fornecedor: ${item.fornecedorSelecionado}. Devolvido para Compras — aguardando NF e dados de entrega.` });
   };
 
   const handleWhatsAppApproval = (item: Aprovacao) => {
@@ -213,10 +213,10 @@ export default function AprovacaoScreen() {
               {item.aprovado ? (
                 <div className="flex items-center justify-center gap-3 py-3 px-5 rounded-xl bg-success/5">
                   <ShieldCheck className="h-5 w-5 text-success" />
-                  <div>
-                    <p className="font-semibold text-success text-sm">Aprovado — {item.fornecedorSelecionado}</p>
-                    <p className="text-[10px] text-muted-foreground">Encaminhado para pagamento</p>
-                  </div>
+                   <div>
+                     <p className="font-semibold text-success text-sm">Aprovado — {item.fornecedorSelecionado}</p>
+                     <p className="text-[10px] text-muted-foreground">Devolvido para Compras — aguardando NF e dados de entrega</p>
+                   </div>
                 </div>
               ) : (
                 <div className="space-y-3">

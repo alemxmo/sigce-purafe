@@ -37,10 +37,18 @@ const perfilColors: Record<string, string> = {
   Financeiro: "bg-primary/15 text-primary",
 };
 
+const initialCentrosCusto = [
+  { id: 1, nome: "Sede", codigo: "SEDE", ativo: true },
+  { id: 2, nome: "Instituto Pura Fé", codigo: "INSTITUTO", ativo: true },
+  { id: 3, nome: "Central de Atendimento", codigo: "CENTRAL", ativo: true },
+];
+
 export default function ConfiguracoesScreen() {
   const [usuarios, setUsuarios] = useState(initialUsuarios);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [novoUsuario, setNovoUsuario] = useState({ nome: "", email: "", perfil: "Solicitante" });
+  const [centrosCusto, setCentrosCusto] = useState(initialCentrosCusto);
+  const [novoCentro, setNovoCentro] = useState({ nome: "", codigo: "" });
 
   const handleSalvarUsuario = () => {
     if (!novoUsuario.nome || !novoUsuario.email) return;
@@ -63,6 +71,7 @@ export default function ConfiguracoesScreen() {
       <Tabs defaultValue="usuarios">
         <TabsList className="h-9">
           <TabsTrigger value="usuarios" className="text-xs gap-1.5"><Users className="h-3.5 w-3.5" /> Usuários</TabsTrigger>
+          <TabsTrigger value="centros" className="text-xs gap-1.5"><Tag className="h-3.5 w-3.5" /> Centros de Custo</TabsTrigger>
           <TabsTrigger value="sistema" className="text-xs gap-1.5"><Settings2 className="h-3.5 w-3.5" /> Sistema</TabsTrigger>
         </TabsList>
 
@@ -105,6 +114,52 @@ export default function ConfiguracoesScreen() {
                       <TableCell className="text-xs text-muted-foreground">{u.ultimoAcesso}</TableCell>
                     </TableRow>
                   ))}
+                </TableBody>
+              </Table>
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Centros de Custo Tab */}
+        <TabsContent value="centros" className="space-y-4 mt-4">
+          <p className="text-xs text-muted-foreground">Gerencie os centros de custo disponíveis no sistema.</p>
+          <Card className="border-0 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/40">
+                    <TableHead className="text-[11px] font-semibold">Nome</TableHead>
+                    <TableHead className="text-[11px] font-semibold">Código</TableHead>
+                    <TableHead className="text-[11px] font-semibold">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {centrosCusto.map(cc => (
+                    <TableRow key={cc.id} className="hover:bg-muted/20">
+                      <TableCell className="text-xs font-medium">{cc.nome}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground font-mono">{cc.codigo}</TableCell>
+                      <TableCell>
+                        <Badge className="text-[10px] border-0 bg-success/15 text-success">Ativo</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow className="bg-muted/10">
+                    <TableCell>
+                      <Input placeholder="Nome do centro" className="h-8 text-xs" value={novoCentro.nome} onChange={e => setNovoCentro(p => ({ ...p, nome: e.target.value }))} />
+                    </TableCell>
+                    <TableCell>
+                      <Input placeholder="CÓDIGO" className="h-8 text-xs font-mono uppercase" value={novoCentro.codigo} onChange={e => setNovoCentro(p => ({ ...p, codigo: e.target.value.toUpperCase() }))} />
+                    </TableCell>
+                    <TableCell>
+                      <Button size="sm" className="h-8 text-xs" disabled={!novoCentro.nome || !novoCentro.codigo} onClick={() => {
+                        setCentrosCusto(prev => [...prev, { id: prev.length + 1, nome: novoCentro.nome, codigo: novoCentro.codigo, ativo: true }]);
+                        setNovoCentro({ nome: "", codigo: "" });
+                        toast({ title: "✅ Centro de Custo adicionado", description: `${novoCentro.nome} cadastrado.` });
+                      }}>
+                        <Plus className="h-3 w-3 mr-1" /> Adicionar
+                      </Button>
+                    </TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
             </div>

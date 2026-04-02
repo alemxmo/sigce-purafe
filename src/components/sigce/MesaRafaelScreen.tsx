@@ -14,7 +14,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 
-type PedidoStatus = "nova" | "em_cotacao" | "aguardando_complemento" | "aguardando_aprovacao" | "aguardando_pagamento" | "em_logistica";
+type PedidoStatus = "nova" | "em_cotacao" | "aguardando_complemento" | "aguardando_aprovacao" | "aprovada_retorno" | "aguardando_pagamento" | "em_logistica";
 
 interface Cotacao {
   fornecedor: string;
@@ -150,6 +150,7 @@ const columns: { status: PedidoStatus; label: string; color: string }[] = [
   { status: "em_cotacao", label: "Em Cotação", color: "bg-warning" },
   { status: "aguardando_complemento", label: "Aguard. Complemento", color: "bg-destructive" },
   { status: "aguardando_aprovacao", label: "Aguard. Aprovação", color: "bg-success" },
+  { status: "aprovada_retorno", label: "Aprovado — Complementar Docs", color: "bg-success" },
   { status: "aguardando_pagamento", label: "Aguard. Pagamento", color: "bg-primary" },
   { status: "em_logistica", label: "Em Logística", color: "bg-warning" },
 ];
@@ -172,7 +173,7 @@ const urgenciaColor: Record<string, string> = {
 function getStepIndex(status: PedidoStatus): number {
   const map: Record<PedidoStatus, number> = {
     nova: 0, em_cotacao: 1, aguardando_complemento: 1,
-    aguardando_aprovacao: 2, aguardando_pagamento: 3, em_logistica: 4
+    aguardando_aprovacao: 2, aprovada_retorno: 2.5, aguardando_pagamento: 3, em_logistica: 4
   };
   return map[status];
 }
@@ -450,7 +451,7 @@ export default function MesaRafaelScreen() {
                 value={aprovacaoObs} onChange={e => setAprovacaoObs(e.target.value)} />
               <div className="flex gap-2 mt-2">
                 <Button size="sm" className="flex-1 h-9 text-xs bg-success hover:bg-success/90 text-success-foreground"
-                  onClick={() => advanceStatus(pedido.id, "aguardando_pagamento", `"${pedido.item}" aprovado! Encaminhado para pagamento.`)}>
+                  onClick={() => advanceStatus(pedido.id, "aprovada_retorno", `"${pedido.item}" aprovado! Devolvido para Compras — aguardando NF e dados de entrega.`)}>
                   <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Aprovado
                 </Button>
                 <Button size="sm" variant="destructive" className="flex-1 h-9 text-xs"
@@ -463,6 +464,44 @@ export default function MesaRafaelScreen() {
               }}>
                 <Paperclip className="h-3 w-3 mr-1" /> Anexar Print WhatsApp
               </Button>
+            </div>
+          </div>
+        );
+
+      case "aprovada_retorno":
+        return (
+          <div className="space-y-3">
+            <div className="p-3 rounded-lg border border-success/20 bg-success/5">
+              <div className="flex items-center gap-2 mb-3">
+                <Badge className="bg-success text-success-foreground text-[10px] border-0">Aprovado pela Liderança</Badge>
+              </div>
+              <p className="text-xs font-semibold text-success mb-2 flex items-center gap-1.5">
+                <FileText className="h-3.5 w-3.5" /> Complementar Documentos antes de enviar à Controladoria
+              </p>
+              <p className="text-[10px] text-muted-foreground mb-3">
+                Anexe a NF do fornecedor e registre observações de entrega negociadas.
+              </p>
+              {pedido.fornecedor && (
+                <div className="p-2 rounded bg-muted/40 mb-3">
+                  <p className="text-[10px] font-semibold">Fornecedor aprovado: {pedido.fornecedor}</p>
+                  <p className="text-[10px] text-muted-foreground">Valor: {pedido.melhorPreco}</p>
+                </div>
+              )}
+              <div className="space-y-2">
+                <div>
+                  <label className="text-[10px] font-medium text-muted-foreground mb-1 block">Nota Fiscal (NF)</label>
+                  <Input type="file" className="h-8 text-xs" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-medium text-muted-foreground mb-1 block">Observações de Entrega</label>
+                  <Textarea placeholder="Ex: Entrega agendada para terça, portaria B. Conferir qtd de caixas..." className="text-xs min-h-[60px]"
+                    value={aprovacaoObs} onChange={e => setAprovacaoObs(e.target.value)} />
+                </div>
+                <Button size="sm" className="w-full h-9 text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
+                  onClick={() => advanceStatus(pedido.id, "aguardando_pagamento", `"${pedido.item}" documentos anexados. Encaminhado para Controladoria.`)}>
+                  <Send className="h-3.5 w-3.5 mr-1.5" /> Encaminhar para Controladoria
+                </Button>
+              </div>
             </div>
           </div>
         );

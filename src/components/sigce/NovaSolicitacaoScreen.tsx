@@ -59,12 +59,9 @@ export default function NovaSolicitacaoScreen({ onNavigate }: Props) {
                     <Select>
                       <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Selecione" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="SEDE">SEDE</SelectItem>
-                        <SelectItem value="CENTRAL">CENTRAL</SelectItem>
-                        <SelectItem value="EVENTOS">EVENTOS</SelectItem>
-                        <SelectItem value="KIDS">KIDS</SelectItem>
-                        <SelectItem value="LOUVOR">LOUVOR</SelectItem>
-                        <SelectItem value="CRIATIVO">CRIATIVO</SelectItem>
+                        <SelectItem value="SEDE">Sede</SelectItem>
+                        <SelectItem value="INSTITUTO">Instituto Pura Fé</SelectItem>
+                        <SelectItem value="CENTRAL">Central de Atendimento</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -99,19 +96,9 @@ export default function NovaSolicitacaoScreen({ onNavigate }: Props) {
                     <Input type="number" placeholder="1" className="h-9 text-sm" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs">Data Limite *</Label>
+                    <Label className="text-xs">Prazo de Entrega *</Label>
                     <Input type="date" className="h-9 text-sm" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">Urgência *</Label>
-                    <Select>
-                      <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Selecione" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="alta">Alta</SelectItem>
-                        <SelectItem value="critica">Crítica</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <p className="text-[10px] text-muted-foreground">Data limite para recebimento do item</p>
                   </div>
                 </div>
               </div>
