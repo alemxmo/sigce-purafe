@@ -173,7 +173,7 @@ const urgenciaColor: Record<string, string> = {
 function getStepIndex(status: PedidoStatus): number {
   const map: Record<PedidoStatus, number> = {
     nova: 0, em_cotacao: 1, aguardando_complemento: 1,
-    aguardando_aprovacao: 2, aguardando_pagamento: 3, em_logistica: 4
+    aguardando_aprovacao: 2, aprovada_retorno: 2.5, aguardando_pagamento: 3, em_logistica: 4
   };
   return map[status];
 }
