@@ -37,10 +37,18 @@ const perfilColors: Record<string, string> = {
   Financeiro: "bg-primary/15 text-primary",
 };
 
+const initialCentrosCusto = [
+  { id: 1, nome: "Sede", codigo: "SEDE", ativo: true },
+  { id: 2, nome: "Instituto Pura Fé", codigo: "INSTITUTO", ativo: true },
+  { id: 3, nome: "Central de Atendimento", codigo: "CENTRAL", ativo: true },
+];
+
 export default function ConfiguracoesScreen() {
   const [usuarios, setUsuarios] = useState(initialUsuarios);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [novoUsuario, setNovoUsuario] = useState({ nome: "", email: "", perfil: "Solicitante" });
+  const [centrosCusto, setCentrosCusto] = useState(initialCentrosCusto);
+  const [novoCentro, setNovoCentro] = useState({ nome: "", codigo: "" });
 
   const handleSalvarUsuario = () => {
     if (!novoUsuario.nome || !novoUsuario.email) return;
