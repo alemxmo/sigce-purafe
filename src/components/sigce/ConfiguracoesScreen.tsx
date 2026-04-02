@@ -71,6 +71,7 @@ export default function ConfiguracoesScreen() {
       <Tabs defaultValue="usuarios">
         <TabsList className="h-9">
           <TabsTrigger value="usuarios" className="text-xs gap-1.5"><Users className="h-3.5 w-3.5" /> Usuários</TabsTrigger>
+          <TabsTrigger value="centros" className="text-xs gap-1.5"><Tag className="h-3.5 w-3.5" /> Centros de Custo</TabsTrigger>
           <TabsTrigger value="sistema" className="text-xs gap-1.5"><Settings2 className="h-3.5 w-3.5" /> Sistema</TabsTrigger>
         </TabsList>
 
