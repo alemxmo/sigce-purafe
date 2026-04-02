@@ -1,42 +1,53 @@
 
 
-# Cadastro de Despesas Diretas na Controladoria
+# Plano: Ajustes no Formulário de Solicitação + Fluxo Pós-Aprovação
 
-## Problema
+## 4 mudanças solicitadas
 
-Nem todo pagamento nasce de uma solicitação de compras. Despesas como IPTU, contas de luz, internet, seguros e taxas são lançadas diretamente pela Controladoria. Hoje a seção "Despesas Recorrentes" é apenas uma lista estática sem interação.
+### 1. Centro de Custo — reduzir para 3 opções + cadastro em Configurações
 
-## Solução
+**`NovaSolicitacaoScreen.tsx`**: Reduzir o select de Centro de Custo para apenas:
+- Sede
+- Instituto Pura Fé
+- Central de Atendimento
 
-Transformar a seção de Despesas Recorrentes em uma área gerenciável com formulário de cadastro, e adicionar uma nova seção de **Despesas Avulsas** para lançamentos pontuais que não vêm do fluxo de compras.
+**`ConfiguracoesScreen.tsx`**: Adicionar aba **"Centros de Custo"** (ou seção dentro da aba Sistema) com tabela listando os centros cadastrados e botão "+ Novo Centro de Custo" para adicionar novos via formulário inline. Dados iniciais: os 3 acima.
 
-## Mudanças em `ControladoriaScreen.tsx`
+### 2. Melhorar label "Data Limite"
 
-### 1. Despesas Recorrentes — tornar editável
-- Converter `despesasRecorrentes` em `useState`
-- Adicionar botão **"+ Nova Despesa Recorrente"** no header da seção
-- Ao clicar, abrir mini-form inline com: Descrição, Valor, Frequência (Mensal/Bimestral/Anual), Próximo Vencimento, Centro de Custo, Categoria (IPTU/Utilidades/Serviços/Seguros/Outros)
-- Cada item da lista ganha ícone de clique para abrir drawer com detalhes e opção de anexar documentos (boleto, NF)
+**`NovaSolicitacaoScreen.tsx`**: Alterar de `Data Limite *` para `Prazo de Entrega *` com hint text abaixo: "Data limite para recebimento do item".
 
-### 2. Nova seção: Lançamentos Diretos (Despesas Avulsas)
-- Tabela abaixo das Despesas Recorrentes para pagamentos pontuais cadastrados pela Controladoria (ex: multa, taxa cartorial, reparo emergencial)
-- Dados mockados iniciais: 2-3 lançamentos avulsos
-- Botão **"+ Novo Lançamento"** com Sheet lateral contendo:
-  - Descrição, Fornecedor/Beneficiário, Valor, Vencimento, Centro de Custo, Categoria, Forma de Pagamento, Chave Pix/Dados Bancários
-  - Seção de anexos (mesmo padrão já existente: boleto, NF, comprovante)
-- Ao salvar, o lançamento aparece na tabela e também fica visível no Financeiro
+### 3. Remover campo Urgência
 
-### 3. Integração com Financeiro
-- Os lançamentos diretos criados na Controladoria devem ter um campo `origem: "controladoria"` para diferenciá-los dos que vêm do fluxo de compras
-- No `FinanceiroScreen.tsx`, adicionar badge "Direto" para pagamentos com essa origem, ao lado dos badges de documentos existentes
+**`NovaSolicitacaoScreen.tsx`**: Remover o bloco do select de Urgência e o `SelectItem` correspondente. Ajustar o grid para manter alinhamento.
+
+### 4. Fluxo pós-aprovação: retorno para Compras antes da Controladoria
+
+Após a aprovação executiva, a solicitação não vai direto para pagamento — ela volta para Compras para que o comprador possa:
+- Anexar NF do fornecedor
+- Registrar observações de entrega negociadas
+- Só então encaminhar para a Controladoria
+
+**`AprovacaoScreen.tsx`**: Após aprovar, o texto muda de "Encaminhado para pagamento" para **"Devolvido para Compras — aguardando NF e dados de entrega"**.
+
+**`MesaRafaelScreen.tsx`**:
+- Adicionar novo status ao pipeline: `aprovada_retorno` (entre "Aguardando Aprovação" e "Aguardando Pagamento")
+- Nova coluna no CRM: **"Aprovado — Complementar Docs"** com cor verde clara
+- Ao abrir o drawer de um pedido nesse status, exibir:
+  - Badge "Aprovado pela liderança" em verde
+  - Fornecedor selecionado na aprovação
+  - Mini-form para anexar NF (input file simulado + nome do arquivo)
+  - Textarea para "Observações de entrega"
+  - Botão **"Encaminhar para Controladoria"** que move o pedido para `aguardando_pagamento`
+
+---
 
 ## Arquivos modificados
 
 | Arquivo | Mudança |
 |---------|---------|
-| `ControladoriaScreen.tsx` | useState para recorrentes, form de cadastro, seção Lançamentos Diretos com Sheet |
-| `FinanceiroScreen.tsx` | Badge "Direto" para pagamentos de origem controladoria |
-
-## O que NÃO muda
-- KPI cards, tabela de Saving, layout geral, demais telas
+| `NovaSolicitacaoScreen.tsx` | Centro de Custo com 3 opções, label "Prazo de Entrega", remover Urgência |
+| `ConfiguracoesScreen.tsx` | Aba/seção de Centros de Custo com CRUD simples |
+| `AprovacaoScreen.tsx` | Texto pós-aprovação atualizado para "Devolvido para Compras" |
+| `MesaRafaelScreen.tsx` | Novo status `aprovada_retorno`, nova coluna no CRM, drawer com form de NF + obs |
 
