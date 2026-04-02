@@ -451,7 +451,7 @@ export default function MesaRafaelScreen() {
                 value={aprovacaoObs} onChange={e => setAprovacaoObs(e.target.value)} />
               <div className="flex gap-2 mt-2">
                 <Button size="sm" className="flex-1 h-9 text-xs bg-success hover:bg-success/90 text-success-foreground"
-                  onClick={() => advanceStatus(pedido.id, "aguardando_pagamento", `"${pedido.item}" aprovado! Encaminhado para pagamento.`)}>
+                  onClick={() => advanceStatus(pedido.id, "aprovada_retorno", `"${pedido.item}" aprovado! Devolvido para Compras — aguardando NF e dados de entrega.`)}>
                   <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Aprovado
                 </Button>
                 <Button size="sm" variant="destructive" className="flex-1 h-9 text-xs"
