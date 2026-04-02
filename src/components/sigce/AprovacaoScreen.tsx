@@ -81,7 +81,7 @@ export default function AprovacaoScreen() {
     const item = items.find(i => i.id === id);
     if (!item?.fornecedorSelecionado) return;
     setItems(prev => prev.map(i => i.id === id ? { ...i, aprovado: true } : i));
-    toast({ title: "✅ Compra Aprovada", description: `${item.titulo} — Fornecedor: ${item.fornecedorSelecionado}. Encaminhado para pagamento.` });
+    toast({ title: "✅ Compra Aprovada", description: `${item.titulo} — Fornecedor: ${item.fornecedorSelecionado}. Devolvido para Compras — aguardando NF e dados de entrega.` });
   };
 
   const handleWhatsAppApproval = (item: Aprovacao) => {
