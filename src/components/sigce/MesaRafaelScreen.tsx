@@ -150,6 +150,7 @@ const columns: { status: PedidoStatus; label: string; color: string }[] = [
   { status: "em_cotacao", label: "Em Cotação", color: "bg-warning" },
   { status: "aguardando_complemento", label: "Aguard. Complemento", color: "bg-destructive" },
   { status: "aguardando_aprovacao", label: "Aguard. Aprovação", color: "bg-success" },
+  { status: "aprovada_retorno", label: "Aprovado — Complementar Docs", color: "bg-success" },
   { status: "aguardando_pagamento", label: "Aguard. Pagamento", color: "bg-primary" },
   { status: "em_logistica", label: "Em Logística", color: "bg-warning" },
 ];
