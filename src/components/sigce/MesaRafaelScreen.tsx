@@ -14,7 +14,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 
-type PedidoStatus = "nova" | "em_cotacao" | "aguardando_complemento" | "aguardando_aprovacao" | "aguardando_pagamento" | "em_logistica";
+type PedidoStatus = "nova" | "em_cotacao" | "aguardando_complemento" | "aguardando_aprovacao" | "aprovada_retorno" | "aguardando_pagamento" | "em_logistica";
 
 interface Cotacao {
   fornecedor: string;
