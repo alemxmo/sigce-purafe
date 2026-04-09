@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   Search, Send, FileText, RotateCcw, MessageSquare,
   Clock, Paperclip, CheckCircle2, User, Copy, ExternalLink, Truck, CreditCard,
-  Plus, ChevronRight, Package, DollarSign, AlertCircle
+  Plus, ChevronRight, Package, DollarSign, AlertCircle, Link2
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -218,7 +218,7 @@ export default function MesaRafaelScreen() {
   };
 
   const handleCopyWhatsApp = (pedido: Pedido) => {
-    const msg = `*SIGCE — Solicitação de Cotação*\n\nOlá! Gostaríamos de solicitar cotação para o seguinte item:\n\n📦 *Item:* ${pedido.item}\n📊 *Quantidade:* ${pedido.qtd}\n📅 *Prazo desejado:* ${pedido.prazo}\n🏢 *Centro de Custo:* ${pedido.centroCusto}\n\nPor favor, envie:\n- Valor unitário e total\n- Prazo de entrega\n- Forma de pagamento\n- Frete (se houver)\n\nAgradecemos o retorno!`;
+    const msg = `*SIGCE — Solicitação de Cotação*\n\nOlá! Gostaríamos de solicitar cotação para o seguinte item:\n\n📦 *Item:* ${pedido.item}\n📊 *Quantidade:* ${pedido.qtd}\n📅 *Prazo desejado:* ${pedido.prazo}\n\nPor favor, envie:\n- Valor unitário e total\n- Prazo de entrega\n- Forma de pagamento\n- Frete (se houver)\n\nAgradecemos o retorno!`;
     navigator.clipboard.writeText(msg);
     toast({ title: "📋 Mensagem Copiada", description: "Cole no WhatsApp para enviar ao fornecedor." });
   };
@@ -487,6 +487,35 @@ export default function MesaRafaelScreen() {
                   <p className="text-[10px] text-muted-foreground">Valor: {pedido.melhorPreco}</p>
                 </div>
               )}
+
+              {/* Link para Fornecedor */}
+              <div className="p-2.5 rounded-lg border border-primary/15 bg-primary/5 mb-3">
+                <p className="text-[10px] font-semibold text-primary mb-1 flex items-center gap-1">
+                  <Link2 className="h-3 w-3" /> Enviar Link ao Fornecedor
+                </p>
+                <p className="text-[9px] text-muted-foreground mb-2">
+                  O fornecedor poderá atualizar dados bancários (Banco, Ag, CC PJ + Chave Pix) e anexar a NF. Os dados bancários e Chave Pix devem constar na NF.
+                </p>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="flex-1 h-7 text-[10px]" onClick={() => {
+                    const token = Math.random().toString(36).substring(2, 10).toUpperCase();
+                    const link = `https://sigce-purafe.lovable.app/fornecedor/atualizar/${token}`;
+                    navigator.clipboard.writeText(link);
+                    toast({ title: "📋 Link copiado!", description: "Envie ao fornecedor para atualização de dados e NF." });
+                  }}>
+                    <Copy className="h-3 w-3 mr-1" /> Copiar Link
+                  </Button>
+                  <Button size="sm" variant="outline" className="flex-1 h-7 text-[10px]" onClick={() => {
+                    const token = Math.random().toString(36).substring(2, 10).toUpperCase();
+                    const link = `https://sigce-purafe.lovable.app/fornecedor/atualizar/${token}`;
+                    const msg = encodeURIComponent(`Olá! Sua proposta foi aprovada pela Pura Fé.\n\nPor favor, acesse o link abaixo para atualizar seus dados bancários e anexar a Nota Fiscal:\n${link}\n\n⚠️ Importante: Banco, Ag, CC PJ e Chave Pix devem constar na NF.`);
+                    window.open(`https://wa.me/?text=${msg}`, "_blank");
+                  }}>
+                    <ExternalLink className="h-3 w-3 mr-1" /> WhatsApp
+                  </Button>
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <div>
                   <label className="text-[10px] font-medium text-muted-foreground mb-1 block">Nota Fiscal (NF)</label>
@@ -500,6 +529,10 @@ export default function MesaRafaelScreen() {
                 <Button size="sm" className="w-full h-9 text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
                   onClick={() => advanceStatus(pedido.id, "aguardando_pagamento", `"${pedido.item}" documentos anexados. Encaminhado para Controladoria.`)}>
                   <Send className="h-3.5 w-3.5 mr-1.5" /> Encaminhar para Controladoria
+                </Button>
+                <Button size="sm" variant="ghost" className="w-full h-7 text-[10px] text-muted-foreground"
+                  onClick={() => advanceStatus(pedido.id, "aguardando_pagamento", `"${pedido.item}" encaminhado sem NF — fornecedor enviará após pagamento.`)}>
+                  Encaminhar sem NF (fornecedor enviará após pagamento)
                 </Button>
               </div>
             </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Star, Phone, MapPin, Clock, ChevronRight, Building2, CreditCard, MessageSquare, Plus } from "lucide-react";
+import { Search, Star, Phone, MapPin, Clock, ChevronRight, Building2, CreditCard, MessageSquare, Plus, Link2, Globe, Copy, ExternalLink } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 
 interface Fornecedor {
@@ -21,12 +22,15 @@ interface Fornecedor {
   cidade: string;
   leadTime: string;
   status: "ativo" | "inativo";
+  statusCadastro: "ativo" | "pendente";
   score: number;
   ultimoPedido: string;
   precoMedio: string;
   preferencial: boolean;
   banco: string;
   pix: string;
+  website: string;
+  redesSociais: string;
   historico: { data: string; pedido: string; valor: string }[];
 }
 
@@ -34,9 +38,10 @@ const initialFornecedores: Fornecedor[] = [
   {
     id: 1, nomeFantasia: "Dousystem", razaoSocial: "Dousystem Comércio LTDA", cnpj: "12.345.678/0001-01",
     categoria: "Limpeza & Descartáveis", telefone: "(11) 3333-1111", whatsapp: "5511933331111",
-    cidade: "São Paulo - SP", leadTime: "3 dias", status: "ativo", score: 4.5,
+    cidade: "São Paulo - SP", leadTime: "3 dias", status: "ativo", statusCadastro: "ativo", score: 4.5,
     ultimoPedido: "08/03/2025", precoMedio: "R$ 780,00", preferencial: true,
     banco: "Banco do Brasil — Ag 1234 / CC 56789-0", pix: "12345678000101",
+    website: "www.dousystem.com.br", redesSociais: "@dousystem",
     historico: [
       { data: "08/03", pedido: "Mat. Limpeza", valor: "R$ 780,00" },
       { data: "15/02", pedido: "Descartáveis Copa", valor: "R$ 520,00" },
@@ -46,9 +51,10 @@ const initialFornecedores: Fornecedor[] = [
   {
     id: 2, nomeFantasia: "TACC Iluminação", razaoSocial: "TACC Prod. Iluminação LTDA", cnpj: "23.456.789/0001-02",
     categoria: "Iluminação & Efeitos", telefone: "(11) 3333-2222", whatsapp: "5511933332222",
-    cidade: "Guarulhos - SP", leadTime: "5 dias", status: "ativo", score: 4.2,
+    cidade: "Guarulhos - SP", leadTime: "5 dias", status: "ativo", statusCadastro: "ativo", score: 4.2,
     ultimoPedido: "05/03/2025", precoMedio: "R$ 590,00", preferencial: false,
     banco: "Itaú — Ag 4567 / CC 12345-6", pix: "tacc@iluminacao.com.br",
+    website: "www.tacciluminacao.com.br", redesSociais: "@tacc_iluminacao",
     historico: [
       { data: "05/03", pedido: "Líquido de Haze 5L", valor: "R$ 1.180,00" },
       { data: "10/01", pedido: "Lâmpadas PAR", valor: "R$ 2.400,00" },
@@ -57,9 +63,10 @@ const initialFornecedores: Fornecedor[] = [
   {
     id: 3, nomeFantasia: "Casa do Café", razaoSocial: "Casa do Café Express EIRELI", cnpj: "34.567.890/0001-03",
     categoria: "Copa & Cozinha", telefone: "(11) 3333-3333", whatsapp: "5511933333333",
-    cidade: "São Paulo - SP", leadTime: "2 dias", status: "ativo", score: 4.8,
+    cidade: "São Paulo - SP", leadTime: "2 dias", status: "ativo", statusCadastro: "ativo", score: 4.8,
     ultimoPedido: "09/03/2025", precoMedio: "R$ 389,00", preferencial: true,
     banco: "Bradesco — Ag 7890 / CC 34567-8", pix: "(11)933333333",
+    website: "", redesSociais: "@casadocafe_sp",
     historico: [
       { data: "09/03", pedido: "Kit Café Completo", valor: "R$ 389,61" },
       { data: "10/02", pedido: "Kit Café Mensal", valor: "R$ 412,00" },
@@ -69,17 +76,19 @@ const initialFornecedores: Fornecedor[] = [
   {
     id: 4, nomeFantasia: "Print Express", razaoSocial: "Print Express Gráfica LTDA", cnpj: "45.678.901/0001-04",
     categoria: "Comunicação Visual", telefone: "(11) 3333-4444", whatsapp: "5511933334444",
-    cidade: "Osasco - SP", leadTime: "7 dias", status: "ativo", score: 3.9,
+    cidade: "Osasco - SP", leadTime: "7 dias", status: "ativo", statusCadastro: "ativo", score: 3.9,
     ultimoPedido: "01/03/2025", precoMedio: "R$ 340,00", preferencial: false,
     banco: "Nubank — Ag 0001 / CC 98765-4", pix: "grafica@printexpress.com",
+    website: "www.printexpress.com.br", redesSociais: "",
     historico: [{ data: "01/03", pedido: "Banners Evento", valor: "R$ 680,00" }],
   },
   {
     id: 5, nomeFantasia: "Fazenda Pura Fé Eventos", razaoSocial: "Pura Fé Retiros e Eventos LTDA", cnpj: "56.789.012/0001-05",
     categoria: "Eventos & Locação", telefone: "(11) 3333-5555", whatsapp: "5511933335555",
-    cidade: "Mairiporã - SP", leadTime: "Agendamento", status: "ativo", score: 4.7,
+    cidade: "Mairiporã - SP", leadTime: "Agendamento", status: "ativo", statusCadastro: "ativo", score: 4.7,
     ultimoPedido: "25/02/2025", precoMedio: "R$ 6.000,00", preferencial: true,
     banco: "Caixa — Ag 2345 / CC 67890-1", pix: "56789012000105",
+    website: "", redesSociais: "@purafe_eventos",
     historico: [
       { data: "25/02", pedido: "Retiro Março", valor: "R$ 6.000,00" },
       { data: "15/11", pedido: "Retiro Novembro", valor: "R$ 5.800,00" },
@@ -88,35 +97,72 @@ const initialFornecedores: Fornecedor[] = [
   {
     id: 6, nomeFantasia: "SomPro Audio", razaoSocial: "SomPro Equip. Áudio LTDA", cnpj: "67.890.123/0001-06",
     categoria: "Áudio & Eletrônicos", telefone: "(11) 3333-6666", whatsapp: "5511933336666",
-    cidade: "São Paulo - SP", leadTime: "4 dias", status: "ativo", score: 4.3,
+    cidade: "São Paulo - SP", leadTime: "4 dias", status: "ativo", statusCadastro: "ativo", score: 4.3,
     ultimoPedido: "20/02/2025", precoMedio: "R$ 234,00", preferencial: false,
     banco: "Santander — Ag 3456 / CC 78901-2", pix: "sompro@audio.com",
+    website: "www.sompro.com.br", redesSociais: "@sompro_audio",
     historico: [
       { data: "20/02", pedido: "Pilhas AA cx/48", valor: "R$ 234,00" },
       { data: "05/01", pedido: "Cabo XLR 10m (5x)", valor: "R$ 380,00" },
     ],
   },
+  {
+    id: 7, nomeFantasia: "Engenharia GPJ", razaoSocial: "GPJ Engenharia e Serviços LTDA", cnpj: "78.901.234/0001-07",
+    categoria: "Construção & Manutenção", telefone: "(11) 3333-7777", whatsapp: "5511933337777",
+    cidade: "São Paulo - SP", leadTime: "Sob demanda", status: "ativo", statusCadastro: "pendente", score: 0,
+    ultimoPedido: "—", precoMedio: "—", preferencial: false,
+    banco: "", pix: "",
+    website: "www.engenhariagpj.com.br", redesSociais: "@engenhariagpj",
+    historico: [],
+  },
 ];
 
-const categorias = ["Limpeza & Descartáveis", "Iluminação & Efeitos", "Copa & Cozinha", "Comunicação Visual", "Eventos & Locação", "Áudio & Eletrônicos", "Alimentação", "Papelaria"];
+const categorias = ["Limpeza & Descartáveis", "Iluminação & Efeitos", "Copa & Cozinha", "Comunicação Visual", "Eventos & Locação", "Áudio & Eletrônicos", "Alimentação", "Papelaria", "Construção & Manutenção"];
 
 export default function FornecedoresScreen() {
   const [fornecedores, setFornecedores] = useState(initialFornecedores);
   const [busca, setBusca] = useState("");
   const [selected, setSelected] = useState<Fornecedor | null>(null);
   const [cadastroOpen, setCadastroOpen] = useState(false);
+  const [linkDialog, setLinkDialog] = useState(false);
+  const [generatedLink, setGeneratedLink] = useState("");
   const [form, setForm] = useState({
     nomeFantasia: "", razaoSocial: "", cnpj: "", categoria: "", telefone: "", whatsapp: "",
-    cidade: "", leadTime: "", banco: "", pix: "", preferencial: false,
+    cidade: "", leadTime: "", banco: "", pix: "", preferencial: false, website: "", redesSociais: "",
   });
 
   const filtered = fornecedores.filter(f =>
     !busca || f.nomeFantasia.toLowerCase().includes(busca.toLowerCase()) || f.categoria.toLowerCase().includes(busca.toLowerCase())
   );
 
+  const pendentes = fornecedores.filter(f => f.statusCadastro === "pendente").length;
+
   const handleWhatsApp = (whatsapp: string, nome: string) => {
     window.open(`https://wa.me/${whatsapp}`, "_blank");
     toast({ title: "📱 WhatsApp", description: `Abrindo conversa com ${nome}` });
+  };
+
+  const handleGerarLink = () => {
+    const token = Math.random().toString(36).substring(2, 10).toUpperCase();
+    const link = `https://sigce-purafe.lovable.app/fornecedor/cadastro/${token}`;
+    setGeneratedLink(link);
+    setLinkDialog(true);
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(generatedLink);
+    toast({ title: "📋 Link copiado!", description: "Cole e envie ao fornecedor para autocadastro." });
+  };
+
+  const handleWhatsAppLink = () => {
+    const msg = encodeURIComponent(`Olá! Você foi convidado a se cadastrar como fornecedor da Pura Fé.\n\nPreencha seus dados no link abaixo:\n${generatedLink}\n\nApós o preenchimento, seu cadastro será analisado pela equipe de Compras.`);
+    window.open(`https://wa.me/?text=${msg}`, "_blank");
+  };
+
+  const handleAprovarFornecedor = (id: number) => {
+    setFornecedores(prev => prev.map(f => f.id === id ? { ...f, statusCadastro: "ativo" as const } : f));
+    toast({ title: "✅ Fornecedor aprovado", description: "Cadastro ativado com sucesso." });
+    setSelected(null);
   };
 
   const handleSalvarFornecedor = () => {
@@ -132,16 +178,19 @@ export default function FornecedoresScreen() {
       cidade: form.cidade,
       leadTime: form.leadTime || "A definir",
       status: "ativo",
+      statusCadastro: "ativo",
       score: 0,
       ultimoPedido: "—",
       precoMedio: "—",
       preferencial: form.preferencial,
       banco: form.banco,
       pix: form.pix,
+      website: form.website,
+      redesSociais: form.redesSociais,
       historico: [],
     };
     setFornecedores(prev => [...prev, novo]);
-    setForm({ nomeFantasia: "", razaoSocial: "", cnpj: "", categoria: "", telefone: "", whatsapp: "", cidade: "", leadTime: "", banco: "", pix: "", preferencial: false });
+    setForm({ nomeFantasia: "", razaoSocial: "", cnpj: "", categoria: "", telefone: "", whatsapp: "", cidade: "", leadTime: "", banco: "", pix: "", preferencial: false, website: "", redesSociais: "" });
     setCadastroOpen(false);
     toast({ title: "✅ Fornecedor cadastrado", description: `${novo.nomeFantasia} adicionado à base.` });
   };
@@ -149,7 +198,7 @@ export default function FornecedoresScreen() {
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <Card className="border-0 shadow-sm"><CardContent className="p-4">
           <p className="text-2xl font-bold">{fornecedores.length}</p>
           <p className="text-[10px] text-muted-foreground">Fornecedores Cadastrados</p>
@@ -159,8 +208,12 @@ export default function FornecedoresScreen() {
           <p className="text-[10px] text-muted-foreground">Preferenciais</p>
         </CardContent></Card>
         <Card className="border-0 shadow-sm"><CardContent className="p-4">
-          <p className="text-2xl font-bold">{fornecedores.filter(f => f.status === "ativo").length}</p>
+          <p className="text-2xl font-bold">{fornecedores.filter(f => f.statusCadastro === "ativo").length}</p>
           <p className="text-[10px] text-muted-foreground">Ativos</p>
+        </CardContent></Card>
+        <Card className="border-0 shadow-sm"><CardContent className="p-4">
+          <p className="text-2xl font-bold text-warning">{pendentes}</p>
+          <p className="text-[10px] text-muted-foreground">Pendentes Aprovação</p>
         </CardContent></Card>
         <Card className="border-0 shadow-sm"><CardContent className="p-4">
           <p className="text-2xl font-bold">{new Set(fornecedores.map(f => f.categoria)).size}</p>
@@ -168,13 +221,16 @@ export default function FornecedoresScreen() {
         </CardContent></Card>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 sm:flex-none sm:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input placeholder="Buscar fornecedor..." className="pl-9 h-9 text-xs" value={busca} onChange={e => setBusca(e.target.value)} />
         </div>
         <Button size="sm" className="h-9 text-xs" onClick={() => setCadastroOpen(true)}>
           <Plus className="h-3.5 w-3.5 mr-1" /> Novo Fornecedor
+        </Button>
+        <Button size="sm" variant="outline" className="h-9 text-xs" onClick={handleGerarLink}>
+          <Link2 className="h-3.5 w-3.5 mr-1" /> Gerar Link de Cadastro
         </Button>
       </div>
 
@@ -215,7 +271,13 @@ export default function FornecedoresScreen() {
                     </div>
                   </TableCell>
                   <TableCell className="text-xs font-medium text-right">{f.precoMedio}</TableCell>
-                  <TableCell><Badge className={`text-[10px] border-0 ${f.status === 'ativo' ? 'bg-success/15 text-success' : 'bg-muted text-muted-foreground'}`}>{f.status === 'ativo' ? 'Ativo' : 'Inativo'}</Badge></TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1.5">
+                      <Badge className={`text-[10px] border-0 ${f.statusCadastro === 'ativo' ? 'bg-success/15 text-success' : 'bg-warning/15 text-warning'}`}>
+                        {f.statusCadastro === 'ativo' ? 'Ativo' : 'Pendente'}
+                      </Badge>
+                    </div>
+                  </TableCell>
                   <TableCell><ChevronRight className="h-3.5 w-3.5 text-muted-foreground" /></TableCell>
                 </TableRow>
               ))}
@@ -233,9 +295,21 @@ export default function FornecedoresScreen() {
                 <SheetTitle className="text-sm flex items-center gap-2">
                   {selected.nomeFantasia}
                   {selected.preferencial && <Badge className="text-[9px] bg-warning/15 text-warning border-0">Preferencial</Badge>}
+                  {selected.statusCadastro === "pendente" && <Badge className="text-[9px] bg-warning/15 text-warning border-0">Pendente Aprovação</Badge>}
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-5 space-y-4">
+                {selected.statusCadastro === "pendente" && (
+                  <div className="p-3 rounded-lg border border-warning/30 bg-warning/5">
+                    <p className="text-xs font-semibold text-warning mb-1">Cadastro Pendente de Aprovação</p>
+                    <p className="text-[10px] text-muted-foreground mb-3">Este fornecedor se cadastrou via link externo. Revise os dados e aprove ou rejeite.</p>
+                    <Button size="sm" className="w-full h-9 text-xs bg-success hover:bg-success/90 text-success-foreground"
+                      onClick={() => handleAprovarFornecedor(selected.id)}>
+                      Aprovar Fornecedor
+                    </Button>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-3">
                   {[
                     { label: "Razão Social", value: selected.razaoSocial },
@@ -247,7 +321,7 @@ export default function FornecedoresScreen() {
                     { label: "Lead Time", value: selected.leadTime },
                     { label: "Score", value: `${selected.score}/5.0` },
                     { label: "Último Pedido", value: selected.ultimoPedido },
-                    { label: "Status", value: selected.status === 'ativo' ? 'Ativo' : 'Inativo' },
+                    { label: "Status", value: selected.statusCadastro === 'ativo' ? 'Ativo' : 'Pendente' },
                   ].map(f => (
                     <div key={f.label} className="p-2.5 rounded-lg bg-muted/40">
                       <p className="text-[10px] text-muted-foreground">{f.label}</p>
@@ -256,10 +330,32 @@ export default function FornecedoresScreen() {
                   ))}
                 </div>
 
+                {/* Website & Redes Sociais */}
+                <div className="space-y-2">
+                  {selected.website && (
+                    <div className="p-2.5 rounded-lg bg-muted/40 flex items-center gap-2">
+                      <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                      <div className="flex-1">
+                        <p className="text-[10px] text-muted-foreground">Website</p>
+                        <a href={`https://${selected.website}`} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-primary hover:underline">{selected.website}</a>
+                      </div>
+                    </div>
+                  )}
+                  {selected.redesSociais && (
+                    <div className="p-2.5 rounded-lg bg-muted/40 flex items-center gap-2">
+                      <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+                      <div className="flex-1">
+                        <p className="text-[10px] text-muted-foreground">Redes Sociais</p>
+                        <p className="text-xs font-medium">{selected.redesSociais}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="p-3 rounded-lg bg-muted/40">
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1"><CreditCard className="h-3 w-3" /> Dados Bancários / Pix</p>
-                  <p className="text-xs font-medium mt-1">{selected.banco}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Pix: {selected.pix}</p>
+                  <p className="text-xs font-medium mt-1">{selected.banco || "Não informado"}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Pix: {selected.pix || "Não informado"}</p>
                 </div>
 
                 <Button variant="outline" className="w-full h-9 text-xs" onClick={() => handleWhatsApp(selected.whatsapp, selected.nomeFantasia)}>
@@ -338,6 +434,14 @@ export default function FornecedoresScreen() {
               </div>
             </div>
             <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Website</label>
+              <Input className="h-9 text-xs" placeholder="www.exemplo.com.br" value={form.website} onChange={e => setForm(p => ({ ...p, website: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Redes Sociais</label>
+              <Input className="h-9 text-xs" placeholder="@perfil_instagram" value={form.redesSociais} onChange={e => setForm(p => ({ ...p, redesSociais: e.target.value }))} />
+            </div>
+            <div>
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Dados Bancários</label>
               <Input className="h-9 text-xs" placeholder="Banco — Ag / CC" value={form.banco} onChange={e => setForm(p => ({ ...p, banco: e.target.value }))} />
             </div>
@@ -358,6 +462,33 @@ export default function FornecedoresScreen() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Link de Autocadastro Dialog */}
+      <Dialog open={linkDialog} onOpenChange={setLinkDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-sm">Link de Autocadastro para Fornecedor</DialogTitle>
+            <DialogDescription className="text-xs">
+              Compartilhe este link com o fornecedor para que ele preencha seus dados e se cadastre na base da Pura Fé. O cadastro ficará com status "Pendente" até aprovação.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="p-3 rounded-lg bg-muted/40">
+              <p className="text-[10px] text-muted-foreground mb-1">Link gerado:</p>
+              <p className="text-xs font-mono break-all">{generatedLink}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" className="flex-1 h-9 text-xs" onClick={handleCopyLink}>
+                <Copy className="h-3.5 w-3.5 mr-1.5" /> Copiar Link
+              </Button>
+              <Button size="sm" className="flex-1 h-9 text-xs bg-success hover:bg-success/90 text-success-foreground" onClick={handleWhatsAppLink}>
+                <MessageSquare className="h-3.5 w-3.5 mr-1.5" /> Enviar via WhatsApp
+              </Button>
+            </div>
+            <p className="text-[10px] text-muted-foreground text-center">O fornecedor receberá um formulário para preencher: Nome, CNPJ, Categoria, Website, Redes Sociais, Dados Bancários.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
