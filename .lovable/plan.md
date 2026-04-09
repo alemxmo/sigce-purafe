@@ -1,53 +1,69 @@
 
 
-# Plano: Ajustes no Formulário de Solicitação + Fluxo Pós-Aprovação
+# Plano de Evolução — 6 Melhorias no SIGCE Pura Fé
 
-## 4 mudanças solicitadas
+## 1. Link de Autocadastro para Fornecedores + campos Website/Redes Sociais
 
-### 1. Centro de Custo — reduzir para 3 opções + cadastro em Configurações
+**`FornecedoresScreen.tsx`**:
+- Adicionar campos `website` e `redesSociais` à interface `Fornecedor` e ao formulário de cadastro
+- Adicionar campo `statusCadastro: "ativo" | "pendente"` para diferenciar fornecedores que se autocadastraram
+- Botão **"Gerar Link de Cadastro"** que gera um token simulado e exibe um link copiável + botão WhatsApp
+- Fornecedores com `statusCadastro: "pendente"` aparecem com badge amarelo "Pendente Aprovação" na tabela
+- No drawer de detalhes, exibir website e redes sociais com links clicáveis
 
-**`NovaSolicitacaoScreen.tsx`**: Reduzir o select de Centro de Custo para apenas:
-- Sede
-- Instituto Pura Fé
-- Central de Atendimento
+## 2. Remover Centro de Custo da mensagem WhatsApp
 
-**`ConfiguracoesScreen.tsx`**: Adicionar aba **"Centros de Custo"** (ou seção dentro da aba Sistema) com tabela listando os centros cadastrados e botão "+ Novo Centro de Custo" para adicionar novos via formulário inline. Dados iniciais: os 3 acima.
+**`MesaRafaelScreen.tsx`**: Na função que monta a mensagem de WhatsApp para cotação, remover a linha `🏢 *Centro de Custo:*` do template.
 
-### 2. Melhorar label "Data Limite"
+## 3. PDF de Aprovação Executiva com resumo + cotações
 
-**`NovaSolicitacaoScreen.tsx`**: Alterar de `Data Limite *` para `Prazo de Entrega *` com hint text abaixo: "Data limite para recebimento do item".
+**`AprovacaoScreen.tsx`**:
+- Botão **"Gerar PDF para Aprovação"** em cada card
+- Simular a geração criando um preview visual na tela (componente printável) com:
+  - Folha de rosto: saudação, solicitante, descrição da obra, área, orçamentos listados com valores, observação do comprador, forma de pagamento
+  - Formato inspirado no exemplo dado pelo usuário (texto humanizado, lista de orçamentos, obs sobre fornecedor)
+- Usar `window.print()` ou gerar via canvas para simular o PDF no mockup
 
-### 3. Remover campo Urgência
+## 4. Link Seguro de Aprovação Direta
 
-**`NovaSolicitacaoScreen.tsx`**: Remover o bloco do select de Urgência e o `SelectItem` correspondente. Ajustar o grid para manter alinhamento.
+**`AprovacaoScreen.tsx`**:
+- Botão **"Gerar Link de Aprovação"** que cria um token único simulado
+- Exibir o link em um dialog copiável com instruções: "Compartilhe este link com a liderança para aprovação direta, sem necessidade de login no sistema"
+- Botão de copiar + botão de enviar via WhatsApp
+- Substituir o bloco atual "Aprovação via WhatsApp" por esta abordagem mais limpa
 
-### 4. Fluxo pós-aprovação: retorno para Compras antes da Controladoria
+## 5. Link para Fornecedor Aprovado atualizar cadastro + anexar NF
 
-Após a aprovação executiva, a solicitação não vai direto para pagamento — ela volta para Compras para que o comprador possa:
-- Anexar NF do fornecedor
-- Registrar observações de entrega negociadas
-- Só então encaminhar para a Controladoria
+**`MesaRafaelScreen.tsx`** (coluna `aprovada_retorno`):
+- Quando o pedido está no status `aprovada_retorno`, adicionar botão **"Enviar Link ao Fornecedor"**
+- O link permite ao fornecedor atualizar dados bancários (Banco/Ag/CC PJ + Chave Pix) e anexar NF
+- Observação visual: "Dados bancários (Banco, Ag, CC PJ) e Chave Pix devem constar na NF"
+- Opção de **"Encaminhar sem NF"** com tooltip: "Alguns fornecedores encaminham a NF após o pagamento"
+- Manter o botão "Encaminhar para Controladoria" funcional em ambos os cenários (com ou sem NF)
 
-**`AprovacaoScreen.tsx`**: Após aprovar, o texto muda de "Encaminhado para pagamento" para **"Devolvido para Compras — aguardando NF e dados de entrega"**.
+## 6. Módulo Completo de Controle de Estoque
 
-**`MesaRafaelScreen.tsx`**:
-- Adicionar novo status ao pipeline: `aprovada_retorno` (entre "Aguardando Aprovação" e "Aguardando Pagamento")
-- Nova coluna no CRM: **"Aprovado — Complementar Docs"** com cor verde clara
-- Ao abrir o drawer de um pedido nesse status, exibir:
-  - Badge "Aprovado pela liderança" em verde
-  - Fornecedor selecionado na aprovação
-  - Mini-form para anexar NF (input file simulado + nome do arquivo)
-  - Textarea para "Observações de entrega"
-  - Botão **"Encaminhar para Controladoria"** que move o pedido para `aguardando_pagamento`
-
----
+**`EstoqueScreen.tsx`** — Reescrever com funcionalidades completas:
+- Converter dados para `useState` para permitir CRUD
+- **Cadastro de itens**: Sheet com formulário (Nome, Categoria, Local, Estoque Mínimo, Ponto de Reposição, Unidade de Medida)
+- **Registro de Entradas**: Formulário para registrar recebimentos (Item, Quantidade, Fornecedor, Data, NF)
+- **Registro de Saídas**: Formulário para dar baixa (Item, Quantidade, Destino/Ministério, Responsável)
+- **Movimentações recentes**: Tabela unificada de entradas e saídas com filtro por tipo
+- **Busca e filtros**: Por categoria, status, local
+- **Inventário**: Badge de "Último inventário: dd/mm" e botão para registrar contagem
+- Manter KPI cards e visual de nível (barra de progresso)
 
 ## Arquivos modificados
 
 | Arquivo | Mudança |
 |---------|---------|
-| `NovaSolicitacaoScreen.tsx` | Centro de Custo com 3 opções, label "Prazo de Entrega", remover Urgência |
-| `ConfiguracoesScreen.tsx` | Aba/seção de Centros de Custo com CRUD simples |
-| `AprovacaoScreen.tsx` | Texto pós-aprovação atualizado para "Devolvido para Compras" |
-| `MesaRafaelScreen.tsx` | Novo status `aprovada_retorno`, nova coluna no CRM, drawer com form de NF + obs |
+| `FornecedoresScreen.tsx` | Website, redes sociais, link autocadastro, status pendente |
+| `MesaRafaelScreen.tsx` | Remover centro de custo do WhatsApp, link para fornecedor aprovado |
+| `AprovacaoScreen.tsx` | PDF de aprovação, link seguro de aprovação direta |
+| `EstoqueScreen.tsx` | Reescrita com CRUD completo, entradas, saídas, inventário |
+
+## O que NÃO muda
+- Sidebar, layout geral, identidade visual
+- Controladoria, Financeiro, Configurações, Dashboard
+- Fluxo de cotações e Central de Compras (CRM)
 
