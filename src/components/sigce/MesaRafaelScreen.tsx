@@ -218,7 +218,7 @@ export default function MesaRafaelScreen() {
   };
 
   const handleCopyWhatsApp = (pedido: Pedido) => {
-    const msg = `*SIGCE — Solicitação de Cotação*\n\nOlá! Gostaríamos de solicitar cotação para o seguinte item:\n\n📦 *Item:* ${pedido.item}\n📊 *Quantidade:* ${pedido.qtd}\n📅 *Prazo desejado:* ${pedido.prazo}\n🏢 *Centro de Custo:* ${pedido.centroCusto}\n\nPor favor, envie:\n- Valor unitário e total\n- Prazo de entrega\n- Forma de pagamento\n- Frete (se houver)\n\nAgradecemos o retorno!`;
+    const msg = `*SIGCE — Solicitação de Cotação*\n\nOlá! Gostaríamos de solicitar cotação para o seguinte item:\n\n📦 *Item:* ${pedido.item}\n📊 *Quantidade:* ${pedido.qtd}\n📅 *Prazo desejado:* ${pedido.prazo}\n\nPor favor, envie:\n- Valor unitário e total\n- Prazo de entrega\n- Forma de pagamento\n- Frete (se houver)\n\nAgradecemos o retorno!`;
     navigator.clipboard.writeText(msg);
     toast({ title: "📋 Mensagem Copiada", description: "Cole no WhatsApp para enviar ao fornecedor." });
   };
