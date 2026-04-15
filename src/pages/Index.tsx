@@ -13,8 +13,9 @@ import FinanceiroScreen from "@/components/sigce/FinanceiroScreen";
 import LogisticaScreen from "@/components/sigce/LogisticaScreen";
 import EstoqueScreen from "@/components/sigce/EstoqueScreen";
 import ConfiguracoesScreen from "@/components/sigce/ConfiguracoesScreen";
+import RegistroRapidoScreen from "@/components/sigce/RegistroRapidoScreen";
 
-type Screen = "dashboard" | "solicitacoes" | "nova_solicitacao" | "central_compras" | "fornecedores" | "cotacoes" | "aprovacao" | "controladoria" | "financeiro" | "logistica" | "estoque" | "configuracoes";
+type Screen = "dashboard" | "solicitacoes" | "nova_solicitacao" | "central_compras" | "fornecedores" | "cotacoes" | "aprovacao" | "controladoria" | "financeiro" | "logistica" | "estoque" | "registro_rapido" | "configuracoes";
 
 interface MenuItem {
   id: Screen;
