@@ -218,13 +218,13 @@ export default function MesaRafaelScreen() {
   };
 
   const handleCopyWhatsApp = (pedido: Pedido) => {
-    const msg = `*SIGCE — Solicitação de Cotação*\n\nOlá! Gostaríamos de solicitar cotação para o seguinte item:\n\n📦 *Item:* ${pedido.item}\n📊 *Quantidade:* ${pedido.qtd}\n📅 *Prazo desejado:* ${pedido.prazo}\n\nPor favor, envie:\n- Valor unitário e total\n- Prazo de entrega\n- Forma de pagamento\n- Frete (se houver)\n\nAgradecemos o retorno!`;
+    const msg = `*SIG3B — Solicitação de Cotação*\n\nOlá! Gostaríamos de solicitar cotação para o seguinte item:\n\n📦 *Item:* ${pedido.item}\n📊 *Quantidade:* ${pedido.qtd}\n📅 *Prazo desejado:* ${pedido.prazo}\n\nPor favor, envie:\n- Valor unitário e total\n- Prazo de entrega\n- Forma de pagamento\n- Frete (se houver)\n\nAgradecemos o retorno!`;
     navigator.clipboard.writeText(msg);
     toast({ title: "📋 Mensagem Copiada", description: "Cole no WhatsApp para enviar ao fornecedor." });
   };
 
   const handleOpenWhatsApp = (pedido: Pedido) => {
-    const msg = encodeURIComponent(`*SIGCE — Solicitação de Cotação*\n\nItem: ${pedido.item}\nQuantidade: ${pedido.qtd}\nPrazo: ${pedido.prazo}\n\nPor favor, envie cotação com valor, prazo e frete.`);
+    const msg = encodeURIComponent(`*SIG3B — Solicitação de Cotação*\n\nItem: ${pedido.item}\nQuantidade: ${pedido.qtd}\nPrazo: ${pedido.prazo}\n\nPor favor, envie cotação com valor, prazo e frete.`);
     window.open(`https://wa.me/?text=${msg}`, "_blank");
   };
 
@@ -515,7 +515,7 @@ export default function MesaRafaelScreen() {
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" className="flex-1 h-7 text-[10px]" onClick={() => {
                     const token = Math.random().toString(36).substring(2, 10).toUpperCase();
-                    const link = `https://sigce-purafe.lovable.app/fornecedor/atualizar/${token}`;
+                    const link = `https://sig3b-purafe.lovable.app/fornecedor/atualizar/${token}`;
                     navigator.clipboard.writeText(link);
                     toast({ title: "📋 Link copiado!", description: "Envie ao fornecedor para atualização de dados e NF." });
                   }}>
@@ -523,7 +523,7 @@ export default function MesaRafaelScreen() {
                   </Button>
                   <Button size="sm" variant="outline" className="flex-1 h-7 text-[10px]" onClick={() => {
                     const token = Math.random().toString(36).substring(2, 10).toUpperCase();
-                    const link = `https://sigce-purafe.lovable.app/fornecedor/atualizar/${token}`;
+                    const link = `https://sig3b-purafe.lovable.app/fornecedor/atualizar/${token}`;
                     const msg = encodeURIComponent(`Olá! Sua proposta foi aprovada pela Pura Fé.\n\nPor favor, acesse o link abaixo para atualizar seus dados bancários e anexar a Nota Fiscal:\n${link}\n\n⚠️ Importante: Banco, Ag, CC PJ e Chave Pix devem constar na NF.`);
                     window.open(`https://wa.me/?text=${msg}`, "_blank");
                   }}>

@@ -144,7 +144,7 @@ export default function FornecedoresScreen() {
 
   const handleGerarLink = () => {
     const token = Math.random().toString(36).substring(2, 10).toUpperCase();
-    const link = `https://sigce-purafe.lovable.app/fornecedor/cadastro/${token}`;
+    const link = `https://sig3b-purafe.lovable.app/fornecedor/cadastro/${token}`;
     setGeneratedLink(link);
     setLinkDialog(true);
   };

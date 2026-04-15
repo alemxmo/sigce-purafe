@@ -168,7 +168,7 @@ export default function ConfiguracoesScreen() {
 
         {/* Sistema Tab */}
         <TabsContent value="sistema" className="space-y-4 mt-4">
-          <p className="text-xs text-muted-foreground">Configurações gerais do sistema SIGCE.</p>
+          <p className="text-xs text-muted-foreground">Configurações gerais do sistema SIG3B.</p>
 
           <div className="grid sm:grid-cols-2 gap-4">
             {[

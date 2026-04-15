@@ -98,7 +98,7 @@ const Index = () => {
       >
         <div className="p-5 flex items-center justify-between shrink-0">
           <div>
-            <h1 className="text-lg font-bold text-white tracking-tight">SIGCE — PURA FÉ</h1>
+            <h1 className="text-lg font-bold text-white tracking-tight">SIG3B — PURA FÉ</h1>
             <p className="text-[10px] text-sidebar-foreground/60 leading-tight mt-0.5">
               Sistema Integrado de Gestão
               <br />de Compras e Estoque
@@ -137,7 +137,7 @@ const Index = () => {
         </nav>
 
         <div className="p-4 border-t border-sidebar-border shrink-0">
-          <p className="text-[10px] text-sidebar-foreground/40 text-center">Pura Fé • SIGCE v2.0</p>
+          <p className="text-[10px] text-sidebar-foreground/40 text-center">Pura Fé • SIG3B v2.0</p>
         </div>
       </aside>
 
