@@ -1,69 +1,68 @@
 
 
-# Plano de Evolução — 6 Melhorias no SIGCE Pura Fé
+# Plano: Registro Rápido de Despesas com Cartão de Crédito + Extrato Detalhado
 
-## 1. Link de Autocadastro para Fornecedores + campos Website/Redes Sociais
+## Problema
 
-**`FornecedoresScreen.tsx`**:
-- Adicionar campos `website` e `redesSociais` à interface `Fornecedor` e ao formulário de cadastro
-- Adicionar campo `statusCadastro: "ativo" | "pendente"` para diferenciar fornecedores que se autocadastraram
-- Botão **"Gerar Link de Cadastro"** que gera um token simulado e exibe um link copiável + botão WhatsApp
-- Fornecedores com `statusCadastro: "pendente"` aparecem com badge amarelo "Pendente Aprovação" na tabela
-- No drawer de detalhes, exibir website e redes sociais com links clicáveis
+Hoje o Rafael compra itens com o cartão de crédito da igreja (já aprovados verbalmente pela Bispa) e precisa guardar pilhas de papéis para controle manual. Não existe um caminho rápido no sistema para registrar essas despesas sem passar pelo fluxo completo de cotação/aprovação/pagamento. O mesmo vale para despesas rotineiras (abastecimento, estacionamento) que não precisam de aprovação prévia.
 
-## 2. Remover Centro de Custo da mensagem WhatsApp
+As imagens enviadas mostram o **Extrato Detalhado** mensal que o Rafael monta manualmente em planilha — com data, produto/serviço, valor, motivo, quem autorizou, quem comprou e link do comprovante.
 
-**`MesaRafaelScreen.tsx`**: Na função que monta a mensagem de WhatsApp para cotação, remover a linha `🏢 *Centro de Custo:*` do template.
+## Solução
 
-## 3. PDF de Aprovação Executiva com resumo + cotações
+### 1. Nova tela: "Registro Rápido" (atalho no sidebar)
 
-**`AprovacaoScreen.tsx`**:
-- Botão **"Gerar PDF para Aprovação"** em cada card
-- Simular a geração criando um preview visual na tela (componente printável) com:
-  - Folha de rosto: saudação, solicitante, descrição da obra, área, orçamentos listados com valores, observação do comprador, forma de pagamento
-  - Formato inspirado no exemplo dado pelo usuário (texto humanizado, lista de orçamentos, obs sobre fornecedor)
-- Usar `window.print()` ou gerar via canvas para simular o PDF no mockup
+Um formulário simples e direto para registrar despesas já realizadas, sem passar pelo fluxo de compras:
 
-## 4. Link Seguro de Aprovação Direta
+**Campos do formulário:**
+- Produto / Serviço (texto)
+- Valor (R$)
+- Motivo / Descrição
+- Forma de Pagamento: **Cartão de Crédito** | Pix | Dinheiro | Outro
+- Autorizado por (select: Bispa Vanessa, Bispo Bruno, Pr. Rafael Diniz, Rafael Cardoso)
+- Comprado por (select: Rafael Cardoso, Cleiton Ramos, Pr. Rafael Diniz, Henriqueta Barra)
+- Centro de Custo (Sede / Instituto / Central)
+- Data da compra
+- Anexar comprovante (foto/arquivo simulado)
 
-**`AprovacaoScreen.tsx`**:
-- Botão **"Gerar Link de Aprovação"** que cria um token único simulado
-- Exibir o link em um dialog copiável com instruções: "Compartilhe este link com a liderança para aprovação direta, sem necessidade de login no sistema"
-- Botão de copiar + botão de enviar via WhatsApp
-- Substituir o bloco atual "Aprovação via WhatsApp" por esta abordagem mais limpa
+**Ao salvar:** o registro vai direto para o Extrato Detalhado, sem passar por cotação, aprovação ou financeiro. Toast: "Despesa registrada no extrato."
 
-## 5. Link para Fornecedor Aprovado atualizar cadastro + anexar NF
+### 2. Nova seção na mesma tela: "Extrato Detalhado do Mês"
 
-**`MesaRafaelScreen.tsx`** (coluna `aprovada_retorno`):
-- Quando o pedido está no status `aprovada_retorno`, adicionar botão **"Enviar Link ao Fornecedor"**
-- O link permite ao fornecedor atualizar dados bancários (Banco/Ag/CC PJ + Chave Pix) e anexar NF
-- Observação visual: "Dados bancários (Banco, Ag, CC PJ) e Chave Pix devem constar na NF"
-- Opção de **"Encaminhar sem NF"** com tooltip: "Alguns fornecedores encaminham a NF após o pagamento"
-- Manter o botão "Encaminhar para Controladoria" funcional em ambos os cenários (com ou sem NF)
+Tabela inspirada na planilha que o Rafael já usa, com as mesmas colunas:
+- Data | Produto/Serviço | Valor | Motivo | Autorizado por | Comprado por | Comprovante
 
-## 6. Módulo Completo de Controle de Estoque
+**Funcionalidades:**
+- Filtro por mês (seletor de mês/ano)
+- Filtro por forma de pagamento (mostrar só "Cartão de Crédito")
+- Filtro por quem comprou
+- Agrupamento por dia (como na planilha original)
+- Badge de comprovante: "Anexado" (verde) ou "Pendente" (amarelo)
+- Dados mockados iniciais baseados nas imagens enviadas (agosto 2025)
+- Totalizador no rodapé: total geral + total por forma de pagamento
 
-**`EstoqueScreen.tsx`** — Reescrever com funcionalidades completas:
-- Converter dados para `useState` para permitir CRUD
-- **Cadastro de itens**: Sheet com formulário (Nome, Categoria, Local, Estoque Mínimo, Ponto de Reposição, Unidade de Medida)
-- **Registro de Entradas**: Formulário para registrar recebimentos (Item, Quantidade, Fornecedor, Data, NF)
-- **Registro de Saídas**: Formulário para dar baixa (Item, Quantidade, Destino/Ministério, Responsável)
-- **Movimentações recentes**: Tabela unificada de entradas e saídas com filtro por tipo
-- **Busca e filtros**: Por categoria, status, local
-- **Inventário**: Badge de "Último inventário: dd/mm" e botão para registrar contagem
-- Manter KPI cards e visual de nível (barra de progresso)
+### 3. Tipo de solicitação "Sem Aprovação" na Central de Compras
 
-## Arquivos modificados
+Para casos como abastecimento do carro (Cleito), adicionar ao fluxo existente:
+- Na `MesaRafaelScreen`, quando um pedido é do tipo rotineiro (ex: abastecimento), permitir um botão **"Registrar Direto"** que pula cotação e aprovação, indo direto para anexar comprovante e registrar no extrato.
+- No drawer do pedido com status `nova`, adicionar opção: **"Já foi comprado — registrar direto"** que abre o mini-form de comprovante e salva no extrato.
+
+### 4. Integração com Financeiro e Controladoria
+
+- Os registros rápidos ficam visíveis no `FinanceiroScreen` com badge **"Cartão"** (roxo) para despesas de cartão de crédito
+- A Controladoria pode visualizar o extrato completo na aba de Lançamentos Diretos
+
+## Arquivos
 
 | Arquivo | Mudança |
 |---------|---------|
-| `FornecedoresScreen.tsx` | Website, redes sociais, link autocadastro, status pendente |
-| `MesaRafaelScreen.tsx` | Remover centro de custo do WhatsApp, link para fornecedor aprovado |
-| `AprovacaoScreen.tsx` | PDF de aprovação, link seguro de aprovação direta |
-| `EstoqueScreen.tsx` | Reescrita com CRUD completo, entradas, saídas, inventário |
+| `RegistroRapidoScreen.tsx` | **Novo** — formulário + extrato detalhado mensal |
+| `Index.tsx` | Adicionar rota/item no sidebar para "Registro Rápido" |
+| `MesaRafaelScreen.tsx` | Botão "Já foi comprado — registrar direto" no drawer de pedidos novos |
+| `FinanceiroScreen.tsx` | Badge "Cartão" para despesas vindas do registro rápido |
 
 ## O que NÃO muda
-- Sidebar, layout geral, identidade visual
-- Controladoria, Financeiro, Configurações, Dashboard
-- Fluxo de cotações e Central de Compras (CRM)
+- Fluxo completo de compras (cotação → aprovação → pagamento)
+- Controladoria, Configurações, Dashboard, Estoque
+- Layout geral e identidade visual
 
