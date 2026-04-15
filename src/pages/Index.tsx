@@ -75,6 +75,7 @@ const Index = () => {
       case "financeiro": return <FinanceiroScreen />;
       case "logistica": return <LogisticaScreen />;
       case "estoque": return <EstoqueScreen />;
+      case "registro_rapido": return <RegistroRapidoScreen />;
       case "configuracoes": return <ConfiguracoesScreen />;
     }
   };
