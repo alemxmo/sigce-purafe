@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutDashboard, ShoppingCart, CheckSquare, Landmark, Package, Menu, X, ChevronRight, ShoppingBag, Users, BarChart3, Truck, ClipboardList, FileSpreadsheet, Settings } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, CheckSquare, Landmark, Package, Menu, X, ChevronRight, ShoppingBag, Users, BarChart3, Truck, ClipboardList, FileSpreadsheet, Settings, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DashboardScreen from "@/components/sigce/DashboardScreen";
 import SolicitacoesScreen from "@/components/sigce/SolicitacoesScreen";
