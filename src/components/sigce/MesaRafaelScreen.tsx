@@ -323,6 +323,22 @@ export default function MesaRafaelScreen() {
                 </Button>
               </div>
             </div>
+
+            {/* Atalho: já foi comprado */}
+            <div className="p-3 rounded-lg border border-muted bg-muted/30">
+              <p className="text-xs font-semibold text-muted-foreground mb-1.5 flex items-center gap-1.5">
+                <CreditCard className="h-3.5 w-3.5" /> Já foi comprado?
+              </p>
+              <p className="text-[10px] text-muted-foreground mb-2">
+                Se a compra já foi realizada com cartão ou dinheiro, registre direto no Extrato Detalhado.
+              </p>
+              <Button size="sm" variant="outline" className="w-full h-8 text-xs"
+                onClick={() => {
+                  toast({ title: "📋 Registro Rápido", description: "Acesse a tela 'Registro Rápido' no menu lateral para registrar esta despesa no extrato." });
+                }}>
+                <CreditCard className="h-3 w-3 mr-1" /> Registrar Direto no Extrato
+              </Button>
+            </div>
           </div>
         );
 

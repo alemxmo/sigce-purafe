@@ -236,6 +236,7 @@ export default function FinanceiroScreen() {
                       <div className="flex items-center gap-1">
                         <Badge className={`text-[10px] border-0 ${st.color}`}>{st.label}</Badge>
                         {p.origem === "controladoria" && <Badge className="text-[9px] border-0 bg-muted text-muted-foreground">Direto</Badge>}
+                        {p.formaPagamento === "Cartão" && <Badge className="text-[9px] border-0 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">Cartão</Badge>}
                       </div>
                     </TableCell>
                     <TableCell>
