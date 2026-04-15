@@ -218,13 +218,13 @@ export default function MesaRafaelScreen() {
   };
 
   const handleCopyWhatsApp = (pedido: Pedido) => {
-    const msg = `*SIGCE — Solicitação de Cotação*\n\nOlá! Gostaríamos de solicitar cotação para o seguinte item:\n\n📦 *Item:* ${pedido.item}\n📊 *Quantidade:* ${pedido.qtd}\n📅 *Prazo desejado:* ${pedido.prazo}\n\nPor favor, envie:\n- Valor unitário e total\n- Prazo de entrega\n- Forma de pagamento\n- Frete (se houver)\n\nAgradecemos o retorno!`;
+    const msg = `*SIG3B — Solicitação de Cotação*\n\nOlá! Gostaríamos de solicitar cotação para o seguinte item:\n\n📦 *Item:* ${pedido.item}\n📊 *Quantidade:* ${pedido.qtd}\n📅 *Prazo desejado:* ${pedido.prazo}\n\nPor favor, envie:\n- Valor unitário e total\n- Prazo de entrega\n- Forma de pagamento\n- Frete (se houver)\n\nAgradecemos o retorno!`;
     navigator.clipboard.writeText(msg);
     toast({ title: "📋 Mensagem Copiada", description: "Cole no WhatsApp para enviar ao fornecedor." });
   };
 
   const handleOpenWhatsApp = (pedido: Pedido) => {
-    const msg = encodeURIComponent(`*SIGCE — Solicitação de Cotação*\n\nItem: ${pedido.item}\nQuantidade: ${pedido.qtd}\nPrazo: ${pedido.prazo}\n\nPor favor, envie cotação com valor, prazo e frete.`);
+    const msg = encodeURIComponent(`*SIG3B — Solicitação de Cotação*\n\nItem: ${pedido.item}\nQuantidade: ${pedido.qtd}\nPrazo: ${pedido.prazo}\n\nPor favor, envie cotação com valor, prazo e frete.`);
     window.open(`https://wa.me/?text=${msg}`, "_blank");
   };
 

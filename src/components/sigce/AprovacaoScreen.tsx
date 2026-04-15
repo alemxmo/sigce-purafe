@@ -307,7 +307,7 @@ export default function AprovacaoScreen() {
             <div ref={printRef} className="space-y-6 p-6 bg-white text-black rounded-lg border print:border-0">
               {/* Folha de Rosto */}
               <div className="text-center border-b pb-4">
-                <h1 className="text-lg font-bold text-[#000F9F]">SIGCE — PURA FÉ</h1>
+                <h1 className="text-lg font-bold text-[#000F9F]">SIG3B — PURA FÉ</h1>
                 <p className="text-sm text-gray-500">Solicitação de Aprovação de Compra</p>
               </div>
 
@@ -348,7 +348,7 @@ export default function AprovacaoScreen() {
               </div>
 
               <div className="border-t pt-4 text-center text-xs text-gray-400">
-                Documento gerado pelo SIGCE — Sistema Integrado de Gestão de Compras e Estoque — Pura Fé
+                Documento gerado pelo SIG3B — Sistema Integrado de Gestão de Compras e Estoque — Pura Fé
               </div>
             </div>
           )}
