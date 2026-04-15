@@ -44,7 +44,7 @@ export default function LogisticaScreen() {
   };
 
   const handleNotifyWhatsApp = (pedido: string, solicitante: string) => {
-    const msg = encodeURIComponent(`*SIGCE — Notificação de Entrega*\n\n📦 O pedido "${pedido}" foi recebido com sucesso!\n\nÁrea solicitante: ${solicitante}\nStatus: ✅ Entregue e conferido`);
+    const msg = encodeURIComponent(`*SIG3B — Notificação de Entrega*\n\n📦 O pedido "${pedido}" foi recebido com sucesso!\n\nÁrea solicitante: ${solicitante}\nStatus: ✅ Entregue e conferido`);
     window.open(`https://wa.me/?text=${msg}`, "_blank");
     toast({ title: "📱 WhatsApp Aberto", description: `Notificação para ${solicitante}` });
   };

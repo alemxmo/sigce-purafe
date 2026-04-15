@@ -106,7 +106,7 @@ export default function AprovacaoScreen() {
 
   const handleGerarLinkAprovacao = (item: Aprovacao) => {
     const token = Math.random().toString(36).substring(2, 12).toUpperCase();
-    const link = `https://sigce-purafe.lovable.app/aprovacao/${token}`;
+    const link = `https://sig3b-purafe.lovable.app/aprovacao/${token}`;
     setApprovalLink(link);
     setLinkDialog(true);
   };

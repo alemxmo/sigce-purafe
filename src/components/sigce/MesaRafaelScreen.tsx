@@ -523,7 +523,7 @@ export default function MesaRafaelScreen() {
                   </Button>
                   <Button size="sm" variant="outline" className="flex-1 h-7 text-[10px]" onClick={() => {
                     const token = Math.random().toString(36).substring(2, 10).toUpperCase();
-                    const link = `https://sigce-purafe.lovable.app/fornecedor/atualizar/${token}`;
+                    const link = `https://sig3b-purafe.lovable.app/fornecedor/atualizar/${token}`;
                     const msg = encodeURIComponent(`Olá! Sua proposta foi aprovada pela Pura Fé.\n\nPor favor, acesse o link abaixo para atualizar seus dados bancários e anexar a Nota Fiscal:\n${link}\n\n⚠️ Importante: Banco, Ag, CC PJ e Chave Pix devem constar na NF.`);
                     window.open(`https://wa.me/?text=${msg}`, "_blank");
                   }}>
