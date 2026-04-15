@@ -36,6 +36,7 @@ const menuItems: MenuItem[] = [
   { id: "financeiro", label: "Pagamentos", sublabel: "Contas a pagar", icon: Landmark, group: "Financeiro" },
   { id: "logistica", label: "Logística", sublabel: "Entregas e recebimento", icon: Truck, group: "Entrega" },
   { id: "estoque", label: "Estoque", sublabel: "Controle de itens", icon: Package, group: "Entrega" },
+  { id: "registro_rapido", label: "Registro Rápido", sublabel: "Despesas diretas", icon: CreditCard, group: "Financeiro" },
   { id: "configuracoes", label: "Configurações", sublabel: "Usuários e sistema", icon: Settings, group: "Sistema" },
 ];
 
@@ -51,6 +52,7 @@ const screenTitles: Record<Screen, string> = {
   financeiro: "Pagamentos e Financeiro",
   logistica: "Logística e Recebimento",
   estoque: "Gestão de Estoque",
+  registro_rapido: "Registro Rápido — Extrato Detalhado",
   configuracoes: "Configurações do Sistema",
 };
 
