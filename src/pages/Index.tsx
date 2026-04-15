@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutDashboard, ShoppingCart, CheckSquare, Landmark, Package, Menu, X, ChevronRight, ShoppingBag, Users, BarChart3, Truck, ClipboardList, FileSpreadsheet, Settings } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, CheckSquare, Landmark, Package, Menu, X, ChevronRight, ShoppingBag, Users, BarChart3, Truck, ClipboardList, FileSpreadsheet, Settings, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DashboardScreen from "@/components/sigce/DashboardScreen";
 import SolicitacoesScreen from "@/components/sigce/SolicitacoesScreen";
@@ -13,8 +13,9 @@ import FinanceiroScreen from "@/components/sigce/FinanceiroScreen";
 import LogisticaScreen from "@/components/sigce/LogisticaScreen";
 import EstoqueScreen from "@/components/sigce/EstoqueScreen";
 import ConfiguracoesScreen from "@/components/sigce/ConfiguracoesScreen";
+import RegistroRapidoScreen from "@/components/sigce/RegistroRapidoScreen";
 
-type Screen = "dashboard" | "solicitacoes" | "nova_solicitacao" | "central_compras" | "fornecedores" | "cotacoes" | "aprovacao" | "controladoria" | "financeiro" | "logistica" | "estoque" | "configuracoes";
+type Screen = "dashboard" | "solicitacoes" | "nova_solicitacao" | "central_compras" | "fornecedores" | "cotacoes" | "aprovacao" | "controladoria" | "financeiro" | "logistica" | "estoque" | "registro_rapido" | "configuracoes";
 
 interface MenuItem {
   id: Screen;
@@ -35,6 +36,7 @@ const menuItems: MenuItem[] = [
   { id: "financeiro", label: "Pagamentos", sublabel: "Contas a pagar", icon: Landmark, group: "Financeiro" },
   { id: "logistica", label: "Logística", sublabel: "Entregas e recebimento", icon: Truck, group: "Entrega" },
   { id: "estoque", label: "Estoque", sublabel: "Controle de itens", icon: Package, group: "Entrega" },
+  { id: "registro_rapido", label: "Registro Rápido", sublabel: "Despesas diretas", icon: CreditCard, group: "Financeiro" },
   { id: "configuracoes", label: "Configurações", sublabel: "Usuários e sistema", icon: Settings, group: "Sistema" },
 ];
 
@@ -50,6 +52,7 @@ const screenTitles: Record<Screen, string> = {
   financeiro: "Pagamentos e Financeiro",
   logistica: "Logística e Recebimento",
   estoque: "Gestão de Estoque",
+  registro_rapido: "Registro Rápido — Extrato Detalhado",
   configuracoes: "Configurações do Sistema",
 };
 
@@ -72,6 +75,7 @@ const Index = () => {
       case "financeiro": return <FinanceiroScreen />;
       case "logistica": return <LogisticaScreen />;
       case "estoque": return <EstoqueScreen />;
+      case "registro_rapido": return <RegistroRapidoScreen />;
       case "configuracoes": return <ConfiguracoesScreen />;
     }
   };
